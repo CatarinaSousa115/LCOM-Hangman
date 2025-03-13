@@ -24,8 +24,8 @@ int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
 
   uint32_t counter_val = TIMER_FREQ / freq; /*valor inicial do contador*/
   uint8_t msb, lsb;
-  util_get_LSB(counter_val, lsb);
-  util_get_MSB(counter_val, msb);
+  util_get_LSB(counter_val, &lsb);
+  util_get_MSB(counter_val, &msb);
 
   if(sys_outb(0x43, new_config) != 0) return 1; /*avisar i8254 que vamos configurar o timer*/
 
@@ -36,8 +36,7 @@ int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
 }
 
 int (timer_subscribe_int)(uint8_t *bit_no) {
-    /* To be implemented by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  
 
   return 1;
 }
