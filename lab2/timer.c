@@ -56,7 +56,7 @@ int (timer_get_conf)(uint8_t timer, uint8_t *st) {
 
   sys_outb(TIMER_CTRL, command); //vou mandar para a porta 43 (porta de control word -- TIMER_CTRL) o comando que construi;
 
-  until_sys_inb(timer, *st); //vou receber a resposta do "timer" e guardar a consiguração em *st;
+  util_sys_inb(timer, st); //vou receber a resposta do "timer" e guardar a consiguração em *st;
 
   return 0;
 }
@@ -65,7 +65,7 @@ int (timer_display_conf)(uint8_t timer, uint8_t st,
                         enum timer_status_field field) {
   //fazer o display conf que nada mais é que: de acordo com o "field" vou preencher cada um dos seus pontos
   
-  union timer_status_field helper;
+  union timer_status_field_val helper;
 
   switch (field) {
   
@@ -75,7 +75,7 @@ int (timer_display_conf)(uint8_t timer, uint8_t st,
 
   case tsf_initial:
     st = (st >> 4); //shift 4 casas para a direita para os bits 4 e 5 (initl. mode) fiquem o mais a direita
-    st = st & 0x3 //esta "mascara" deixa apenas ativos os bits 4 e 5 (pos antes de shift) desativando os outros
+    st = st & 0x3; //esta "mascara" deixa apenas ativos os bits 4 e 5 (pos antes de shift) desativando os outros
 
     if (st == 1) {
       helper.in_mode = LSB_only;
@@ -128,6 +128,6 @@ int (timer_display_conf)(uint8_t timer, uint8_t st,
   if (!timer_print_config(timer, field, helper)) {
     return 0;
   }
-  
+
   return 1;
 }
