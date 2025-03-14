@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 int(util_get_LSB)(uint16_t val, uint8_t *lsb) {
-  if (value == null) {
+  if (lsb == NULL) {
     return 1;
   }
 
@@ -12,7 +12,7 @@ int(util_get_LSB)(uint16_t val, uint8_t *lsb) {
 }
 
 int(util_get_MSB)(uint16_t val, uint8_t *msb) {
-  if (value == null) {
+  if (msb == NULL) {
     return 1;
   }
 
@@ -22,12 +22,12 @@ int(util_get_MSB)(uint16_t val, uint8_t *msb) {
 }
 
 int (util_sys_inb)(int port, uint8_t *value) {
-  if (value == null) {
+  if (value == NULL) {
     return 1;
   }
 
   uint32_t val; //declara uma variavel com 32 bits
-  int res = sys_inb(port, val); //mando para o temporizador para receber informação, ou seja, receber a configuralçao atual (os 32 bits
+  int res = sys_inb(port, &val); //mando para o temporizador para receber informação, ou seja, receber a configuralçao atual (os 32 bits
                                 //da porta "port")
 
   *value = 0xFF & val; //bitmask que faz com que de 32 bits passamos para 8 bits, pois em 0xFF apenas os 8 bits mais a direita estão a

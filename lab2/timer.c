@@ -39,24 +39,26 @@ int (timer_get_conf)(uint8_t timer, uint8_t *st) {
   uint8_t command = BIT(7) | BIT(6) | BIT(5); //ativar o bit 7 e 6 para ativar o read-back, ativo o BIT(5) não ativo o bit 4 pois queremos receber 
                                             //apenas a configuração       <----- atenção que não sei se o bit 5 deve ser ativado
 
-  switch (timer)
-  {
-  case 0:
-    command |= BIT(1);
-    break;
-  
-  case 1:
-    command |= BIT(2);
-    break;
+  int port;
 
-  case 2:
+  if (timer == 0) {
+    port = 0x40;
+    command |= BIT(1);
+  }
+
+  if (timer == 1) {
+    port = 0x41;
+    command |= BIT(2);
+  }
+
+  if (timer == 2) {
+    port = 0x42;
     command |= BIT(3);
-    break;
   }
 
   sys_outb(TIMER_CTRL, command); //vou mandar para a porta 43 (porta de control word -- TIMER_CTRL) o comando que construi;
 
-  util_sys_inb(timer, st); //vou receber a resposta do "timer" e guardar a consiguração em *st;
+  util_sys_inb(port, st); //vou receber a resposta do "timer" e guardar a consiguração em *st;
 
   return 0;
 }
