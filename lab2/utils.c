@@ -21,6 +21,6 @@ int(util_sys_inb)(int port, uint8_t *value) {
     return 1;                         // se o apontador for inválido retorna 1
   uint32_t aux_val;                   // valor auxiliar de 32 bites
   int ret = sys_inb(port, &aux_val);  // chama uma função auxiliar para ler o valor do port armazenado-o no valor auxiliar
-  *value = aux_val & 0xFF             // obter apenas os bits menos significativos
+  *value = aux_val & 0xFF;            // obter apenas os bits menos significativos
   return ret;                         // retorna 0 se a função auxiliar tiver corrido corretamente se não, retorna outro valor
 }
