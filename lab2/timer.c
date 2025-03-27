@@ -42,7 +42,7 @@ int (timer_get_conf)(uint8_t timer, uint8_t *st) {
   int port;
 
   if (timer == 0) {
-    port = 0x40;
+    port = 0x40; //colocar o valor hexadecimal da porta para int
     command |= BIT(1);
   }
 
