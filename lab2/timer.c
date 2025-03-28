@@ -9,8 +9,11 @@ int timer_hook_id = 0; //variavel que vai armazenar o id da interrupção (hook)
 uint32_t timer_counter = 0; //"conta" o número de interrupçoes
 
 int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
-  /* To be implemented by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  
+  if (freq > TIMER_FREQ || timer < 19) {
+
+    return 0;
+  }
 
   return 1;
 }

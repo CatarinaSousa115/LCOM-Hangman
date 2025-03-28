@@ -30,8 +30,39 @@ int main(int argc, char *argv[]) {
 }
 
 int(kbd_test_scan)() {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  int ipc_status; //guarda o status da mensagem recebida 
+  int r; //guarda o valor (0 ou 1) que permite saber se a mensagem foi bem recebida
+  uint8_t irq_set; //id da interrupção
+  message msg; //msg recebida pela interrupção
+
+  //"subscreve" a interrupção (pede para ser notificado quando a interrupção (que está em irq_set (???)) acontecer)
+  if (timer_subscribe_int(&irq_set) != 0) {
+    return 1;
+  }
+
+  while(1) { 
+      /* Get a request message. */
+      if( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
+        printf("driver_receive failed with: %d", r);
+        continue;
+      }
+
+      if (is_ipc_notify(ipc_status)) { /* received notification*/
+        switch (_ENDPOINT_P(msg.m_source)) {
+          case HARDWARE: /* hardware interrupt notification */
+
+            if (msg.m_notify.interrupts & irq_set) {
+             /*chamar interruption handler*/
+              
+            }
+            break;
+          default:
+            break; /* no other notifications expected: do nothing */ 
+        }
+      } else { /* received a standard message, not a notification */ 
+          /* no standard messages expected: do nothing */
+      }
+  }
 
   return 1;
 }
