@@ -5,6 +5,9 @@
 
 #include "i8254.h"
 
+int timer_hook_id = 0;
+int counter;
+
 int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
   if(timer > 2 || timer < 0 || freq > TIMER_FREQ || freq < 19) return 1; /*validação de input*/
   uint8_t old_config, new_config;
@@ -36,21 +39,20 @@ int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
 }
 
 int (timer_subscribe_int)(uint8_t *bit_no) {
+  if(bit_no == NULL) return 1; /*validação de input*/
+  *bit_no = BIT(timer_hook_id); /*máscara a utilizar*/
   
-
-  return 1;
+  if(sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &timer_hook_id) != 0) return 1; /*subscrever as interrupções*/
+  return 0;
 }
 
 int (timer_unsubscribe_int)() {
-  /* To be implemented by the students */
-  printf("%s is not yet implemented!\n", __func__);
-
-  return 1;
+  if(sys_irqrmpolicy(TIMER0_IRQ) != 0){return 1;} /* retirar a subscrição da interrupção*/
+  return 0;
 }
 
 void (timer_int_handler)() {
-  /* To be implemented by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  counter--;
 }
 
 int (timer_get_conf)(uint8_t timer, uint8_t *st) {
