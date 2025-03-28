@@ -5,6 +5,9 @@
 
 #include "i8254.h"
 
+int timer_hook_id = 0; //variavel que vai armazenar o id da interrupção (hook)
+uint32_t timer_counter = 0; //"conta" o número de interrupçoes
+
 int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
   /* To be implemented by the students */
   printf("%s is not yet implemented!\n", __func__);
@@ -13,22 +16,37 @@ int (timer_set_frequency)(uint8_t timer, uint32_t freq) {
 }
 
 int (timer_subscribe_int)(uint8_t *bit_no) {
-    /* To be implemented by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  if (bit_no == NULL) {
+    return 1;
+  }
+  //subscrever uma interrupção nada mais é do que pedir ao sistema para ser notificado sempre que um evento expecifico ocorrer
+  //neste caso seria a interrupção gerada pelo timer após X segundos (ao subscrever, chamamos o codigo para trata-la)
 
-  return 1;
+  //neste caso apenas fica ativo o bit da posição 0 (com a ajuda da "macro" BIT) de modo a que "bit_no" armazene a máscara de bits 
+  //que representa a interrupção que irá ser subscrita
+  *bit_no = BIT(timer_hook_id);
+
+  //esta função vai dizer qual a "policy" usada para tratar a interupção expecifica e, enquanto ativa essa interrupção será sempre tratada
+  if (sys_irqsetpolicy(TIMER0_IRQ, IRQ_REENABLE, &timer_hook_id) != 0) {
+    return 1;
+  }
+
+  return 0;
 }
 
 int (timer_unsubscribe_int)() {
-  /* To be implemented by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  
+  //esta função vai remover a "policy" usada para tratar a interupção e dessa forma a interrupção vai parar de ser tratada (vai parar 
+  //de receber notificações sobre a interrupção que o timer_hook_id está a apontar)
+  if (sys_irqrmpolicy(&timer_hook_id) != 0) {
+    return 1;
+  }
 
-  return 1;
+  return 0;
 }
 
 void (timer_int_handler)() {
-  /* To be implemented by the students */
-  printf("%s is not yet implemented!\n", __func__);
+  timer_counter++; //aumenta o valor do counter, ou seja, mantem o registo de quantas interrupções foram feitas até o momento
 }
 
 int (timer_get_conf)(uint8_t timer, uint8_t *st) {
