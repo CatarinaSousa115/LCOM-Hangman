@@ -1,9 +1,13 @@
 #include <lcom/lcf.h>
 
 #include <lcom/lab3.h>
-
+#include "i8042.h"
 #include <stdbool.h>
 #include <stdint.h>
+#include "keyboard.h"
+
+
+extern uint8_t scancode;
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -36,11 +40,9 @@ int(kbd_test_scan)() {
   message msg; //msg recebida pela interrupção
 
   //"subscreve" a interrupção (pede para ser notificado quando a interrupção (que está em irq_set (???)) acontecer)
-  if (timer_subscribe_int(&irq_set) != 0) {
-    return 1;
-  }
+  if (keyboard_subscribe_int(&irq_set) != 0) return 1;
 
-  while(1) { 
+  while(scancode != ESC_BREAKCODE) {//se o scancode for "ESC" é para parar o programa
       /* Get a request message. */
       if( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
         printf("driver_receive failed with: %d", r);
@@ -53,19 +55,20 @@ int(kbd_test_scan)() {
 
             if (msg.m_notify.interrupts & irq_set) {
              /*chamar interruption handler*/
+             keyboard_ih();//tratar da interrupção
+
+             kbd_print_scancode(is_makecode(scancode), code_size(scancode), &scancode);
               
             }
-            break;
-          default:
-            break; /* no other notifications expected: do nothing */ 
         }
-      } else { /* received a standard message, not a notification */ 
-          /* no standard messages expected: do nothing */
-      }
+      } 
   }
 
-  return 1;
+  if (keyboard_unsubscribe_int() != 0) return 1;
+
+  return 0;
 }
+
 
 int(kbd_test_poll)() {
   /* To be completed by the students */
@@ -80,3 +83,4 @@ int(kbd_test_timed_scan)(uint8_t n) {
 
   return 1;
 }
+
