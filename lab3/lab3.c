@@ -6,9 +6,12 @@
 #include <stdint.h>
 #include "keyboard.h"
 #include "k_controller.h"
+#include "timer.c"
+#include "i8254.h"
 
 extern uint8_t scancode;
 //extern uint8_t sys_counter; ativar isto?
+extern uint32_t timer_counter;
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -96,10 +99,66 @@ int(kbd_test_poll)() {
   return 0;
 }
 
-int(kbd_test_timed_scan)(uint8_t n) {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
 
-  return 1;
+//neste caso, em vez de apenas tratarmos 1 tipo de interrupções iremos tratar 2, as do keyboard e do timer
+int(kbd_test_timed_scan)(uint8_t n) {
+  
+  int ipc_status; //guarda o status da mensagem recebida 
+  int r; //guarda o valor (0 ou 1) que permite saber se a mensagem foi bem recebida
+  uint8_t irq_set_keyboard; //id da interrupção do teclado
+  uint8_t irq_set_timer; //id da interrupção do timer
+  message msg; //msg recebida pela interrupção
+
+  uint8_t max_time_without_int = n;
+
+  //"subscreve" a interrupção (pede para ser notificado quando a interrupção (que está em irq_set (???)) acontecer)
+  if (keyboard_subscribe_int(&irq_set_keyboard) != 0) return 1; //interupção do teclado
+  if (timer_subscribe_int(&irq_set_timer) != 0) return 1; //interupção do timer
+
+
+  //neste caso o programa acaba se o scancode for "ESC" ou então se o timer chegar a 0, isto é, se nenhuma interrupção for feita nesse intervalo "n"
+  while(scancode != ESC_BREAKCODE && n > 0) {
+      /* Get a request message. */
+      if( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
+        printf("driver_receive failed with: %d", r);
+        continue;
+      }
+
+      if (is_ipc_notify(ipc_status)) { /* received notification*/
+        switch (_ENDPOINT_P(msg.m_source)) {
+          case HARDWARE: /* hardware interrupt notification */
+
+            //não se pode usar else if porque podemos perder informações, ou do timer ou do teclado o que leva a falhar nos testes
+            
+            //caso o irq_set seja do timer (interrupção) vamos diminuir o contador de tempo max que pode passar sem uma interrupção do teclado ("n")
+            if (msg.m_notify.interrupts & irq_set_timer) { 
+              timer_int_handler();
+
+              //basicamente verifica se já se passou 1seg (se o timer_counter atingiu um multiplo de 60 significa que passou mais 1 seg)
+              if(timer_counter % 60 == 0){
+
+                //ao ter passado mais 1 seg, o tempo max que pode existir sem interrupção do teclado diminui
+                n--;
+              }
+            }
+
+            //caso o irq_set seja do teclado vamos tratar da interrupção extamente como em "kbd_test_scan()"
+            if (msg.m_notify.interrupts & irq_set_keyboard) {
+             /*chamar interruption handler*/
+             keyboard_ih();//tratar da interrupção
+             kbd_print_scancode(is_makecode(scancode), code_size(scancode), &scancode); //da print do scancode
+             
+             //damos reset ao valor do "n" para o numero max original de tempo que pode passar sem inter. e aos "timer_counter" para começar a contar do 0
+             n = max_time_without_int; 
+             timer_counter = 0;
+            }
+        } 
+      }
+  }
+
+  if (keyboard_unsubscribe_int() != 0) return 1;
+  if (timer_unsubscribe_int() != 0) return 1;
+
+  return 0;
 }
 
