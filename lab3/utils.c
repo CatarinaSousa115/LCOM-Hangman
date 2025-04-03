@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+// sys_counter = 0; 
+
 int(util_get_LSB)(uint16_t val, uint8_t *lsb) {
   if (lsb == NULL) {
     return 1;

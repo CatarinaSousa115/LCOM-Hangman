@@ -10,13 +10,13 @@
 extern int keyboard_hook_id;
 extern uint8_t scancode;
 
+void keyboard_ih();
+
 int keyboard_subscribe_int(uint8_t *bit_no);
 
-int keyboard_unsubscribe_int();
+int keyboard_unsubscribe_int ();
 
-int validate_keyboard_status();
-
-void keyboard_ih();
+int restore_interruptions();
 
 bool is_makecode(uint8_t scancode);
 

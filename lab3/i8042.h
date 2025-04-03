@@ -7,7 +7,7 @@
 #define STAT_REG 0x64
 #define KBC_WRITING 0x64
 #define OUT_BUF 0x60
-#define IN_BUF 0x60
+#define WRITE_CMD 0x60
 #define READ_CMD 0X20
 
 //erros

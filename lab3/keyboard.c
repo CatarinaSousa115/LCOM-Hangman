@@ -3,11 +3,13 @@
 #include <lcom/lab3.h>
 #include "i8042.h"
 #include "keyboard.h"
+#include "k_controller.h"
 #include <stdbool.h>
 #include <stdint.h>
 
 int keyboard_hook_id = 1; //o hook id do keyboard é 1
 uint8_t scancode = 0;
+
 
 int (keyboard_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL) return 1;
@@ -30,49 +32,41 @@ int (keyboard_unsubscribe_int)() {
     return 0;
 }
 
-//vai verificar se existem/é necessário tratar de algum erro do status do keyboard
-int (validate_keyboard_status) () {
-
-    uint8_t attemps = 10;
-    uint8_t keyboard_status; //vai armazenar os status do keyboard
-
-    while (attemps > 0) {
-
-        //Chama-se esta função para ela ir até Status Register e receber o status do keyboard que vai ser analisado (para deteção de erros)
-        if (util_sys_inb(STAT_REG, &keyboard_status) != 0) return 1;
-
-        if ((keyboard_status & OUT_BUF_FULL) != 0) { //O Output buffer está full, logo existem dados para ler/ser processados
-            
-            if ((keyboard_status & PARITY_ERROR) != 0)  { //se for diferente de 0, o bit do erro está ativo
-                //erro no parity
-                return 1;
-            }
-
-            if ((keyboard_status & TIMEOUT_ERROR) != 0) {
-                //erro timeout
-                return 1;
-            }
-
-            //se não existir erro no status (verificado pela leitura da porta 0x64 (status register)) então podemos passar a leitura do scancode
-            //que irá estar na porta 0x60 (output buffer) e processa-lo posteriormente
-            if (util_sys_inb(OUT_BUF, &scancode) != 0) {
-                return 1;
-            }
-
-            return 0;
-        }
-
-        tickdelay(micros_to_ticks(30000));
-        attemps--;
-    }
-
-    return 1;
-}
 
 void (keyboard_ih) () {
-    if (validate_keyboard_status() != 0) {
+    //basicamente a fução vai ler o "OUT_BUF" e escrever a info em "scancode" (no caso a info  sobre a tecla pressionada)
+    if (read_controller(OUT_BUF, &scancode) != 0) {
         printf("Error reading the scancode");
     }
+}
+
+
+//função usada para restaurar as interrupções desativadas para se fazer o teste de polling
+int restore_interruptions() {
+    uint8_t commandByte; //byte de comando usado para ativar as interrupções
+
+    //para dar restore as interrupções temos de cumprir alguns passos:
+    
+    //primeiro mandar para o "KBC_WRITING" (0x64) o comando "READ_CMD" (0x20) que vai dar return de um "comandByte", ou seja, vamos avisar
+    //o controlador para preparar um "commandByte" que depois vamos ler em "OUT_BUF" (0x60)
+    if (write_controller(KBC_WRITING, READ_CMD) != 0) return 1;
+
+    //após avisar, vamos então ler de "OUT_BUF" o "commandByte"
+    if (read_controller(OUT_BUF, &commandByte) != 0) return 1;
+
+    //após guardarmos esse "commandByte" vamos então ativar o seu bit 0 que basicamente é o responsável por ativar as interrupções
+    //bit 0 a 0 --> sem interrupções                 bit 0 a 1 --> com interrupçoes
+    commandByte |= BIT(0);
+
+    //depois da "commandByte" estar "construida" vamos avisar o controller que vamos escrever para ele se se preparar para receber a "commandByte"
+    //enviando então o "WRITE_CMD" (0x60) para o "KBC_WRITING"
+    if (write_controller(KBC_WRITING, WRITE_CMD) != 0) return 1;
+
+    //depois de avisar vamos então mandar o "commandByte" para 0x60 (WRITE_CMD) e desta forma o KBC vai ser avisado que iremos ativar denovo
+    //as interrupçoes uma vez que a info dessa porta vai diretamente para o controllador através da call a "sys_outb()"
+    if (write_controller(WRITE_CMD, commandByte) != 0) return 1;
+
+    return 0;
 }
 
 //retorna true se for makecode, falso se for breakcode

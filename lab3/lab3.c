@@ -5,9 +5,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "keyboard.h"
-
+#include "k_controller.h"
 
 extern uint8_t scancode;
+//extern uint8_t sys_counter; ativar isto?
 
 int main(int argc, char *argv[]) {
   // sets the language of LCF messages (can be either EN-US or PT-PT)
@@ -58,23 +59,41 @@ int(kbd_test_scan)() {
              keyboard_ih();//tratar da interrupção
 
              kbd_print_scancode(is_makecode(scancode), code_size(scancode), &scancode);
-              
             }
         }
       } 
   }
 
   if (keyboard_unsubscribe_int() != 0) return 1;
+  //if (kbd_print_no_sysinb(sys_counter) != 0) return 1; ativar isto?
 
   return 0;
 }
 
 
+//neste caso as interrupção serão desativadas quando se chamar o teste para conseguirmos usar tecnicas de polling
 int(kbd_test_poll)() {
-  /* To be completed by the students */
-  printf("%s is not yet implemented!\n", __func__);
 
-  return 1;
+  //mesma logica para acabar o loop que o test_scan()
+  while (scancode != ESC_BREAKCODE) {
+    
+    //neste caso como vamos estar sempre a verificar se foi escrito alguma coisa (polling), então só devemos dar print do scancode quando realmente
+    //estivermos a ler alguma coisa de "OUT_BUFF"(0X60), quando "read_controller()" da return de 0
+    if(read_controller(OUT_BUF, &scancode) == 0) {
+
+      //print do scancode lido
+      kbd_print_scancode(is_makecode(scancode), code_size(scancode), &scancode);
+    }
+
+    //caso contrário o "read_controller()" da return de 1, ou seja, ou existe um erro ou não existe nada para ler
+  }
+
+  if (restore_interruptions() != 0) {
+        printf("Falha ao restaurar interrupções!\n");
+        return 1;
+  }
+
+  return 0;
 }
 
 int(kbd_test_timed_scan)(uint8_t n) {
