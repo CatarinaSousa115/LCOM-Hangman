@@ -55,3 +55,5 @@ int (mouse_test_remote)(uint16_t period, uint8_t cnt) {
     printf("%s(%u, %u): under construction\n", __func__, period, cnt);
     return 1;
 }
+
+mouse_enable_data_reporting();
