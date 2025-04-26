@@ -33,8 +33,9 @@ void (mouse_ih)() {
     }
 }
 
-void (organize_packet_bytes)() {
-    uint8_t is_control = (cur_byte & IS_CONTROL_BYTE); //se o byte 3 estiver ativo e byte de control
+//para garantir que os bytes são do mesmo packet
+void (organize_packet_bytes)(uint8_t *packet_count) {
+    uint8_t is_control = (cur_byte & IS_CONTROL_BYTE); //se o bit 3 estiver ativo e é byte de control
 
     //serve para reservar a posição 0 do packet_bytes para receber o control_byte
     if ((cur_index == 0) && is_control) {
@@ -42,13 +43,30 @@ void (organize_packet_bytes)() {
         cur_index++;
     }
 
-    //nao e o byte de control logo recebe o delta_x e delta_y
+    //packet já foi construído (bytes 0 a 2)
+    else if (cur_index == 3) {
+        construct_packet();
+    }
+
+    //não é o byte de controlo logo recebe o delta_x e delta_y
     else if (cur_index > 0){
         packet_bytes[cur_index] = cur_byte;
         cur_index++;
     }
 }
 
-void (constuct_packet)() {
+void (construct_packet)() {
+    //colocar os bytes do array packet_bytes no struct do packet em si
+    for (int i = 0 ; i < 3 ; i++) {
+        mouse_packet.bytes[i] = packet_bytes[i];
+    }
+
+    mouse_packet.lb = mouse_bytes[0] & MOUSE_LB;
+    mouse_packet.mb = mouse_bytes[0] & MOUSE_MB;
+    mouse_packet.rb = mouse_bytes[0] & MOUSE_RB;
+    mouse_packet.x_ov = mouse_bytes[0] & MOUSE_X_OVFL;
+    mouse_packet.y_ov = mouse_bytes[0] & MOUSE_Y_OVFL;
+    mouse_packet.delta_x = (mouse_bytes[0] & MSB_X_DELTA) ? (0xFF00 | mouse_bytes[1]) : mouse_bytes[1];
+    mouse_packet.delta_y = (mouse_bytes[0] & MSB_Y_DELTA) ? (0xFF00 | mouse_bytes[2]) : mouse_bytes[2];
 
 }

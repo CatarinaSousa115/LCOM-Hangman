@@ -30,11 +30,46 @@ int main(int argc, char *argv[]) {
   return 0;
 }
 
+extern struct packet mouse_packet;
+extern uint8_t cur_index;
+extern int timer_counter;
 
 int (mouse_test_packet)(uint32_t cnt) {
-    /* To be completed */
-    printf("%s(%u): under construction\n", __func__, cnt);
-    return 1;
+
+  int ipc_status;
+  message msg;
+  uint8_t mouse_mask; 
+
+  if (mouse_subscribe_int(&mouse_mask) != 0) return 1;
+
+  if (mouse_enable_data_reporting() != 0) return 1;
+
+  //ciclo com base no fornecido no guião, para quando todos os packets (cnt) forem lidos
+  while (cnt > 0) {
+
+    if (driver_receive(ANY, &msg, &ipc_status) != 0){
+      printf("Error");
+      continue;
+    }
+
+    if (is_ipc_notify(ipc_status)){
+      switch(_ENDPOINT_P(msg.m_source)){
+        case HARDWARE: 
+          if (msg.m_notify.interrupts & mouse_mask){  
+            mouse_ih();                               
+            organize_packet_bytes();                       
+              if(cur_index == 3) {
+                mouse_print_packet(&mouse_packet);
+                cur_index = 0;
+                cnt--;
+              }
+            }
+          }
+          break;
+      }
+    }
+  
+    return 0;
 }
 
 int (mouse_test_async)(uint8_t idle_time) {
