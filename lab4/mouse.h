@@ -12,9 +12,10 @@ int (mouse_unsubscribe_int)();
 
 void (mouse_ih)();
 
-void (constuct_packet)();
+void (construct_packet)();
 
 void (organize_packet_bytes)();
 
+int (mouse_config)(uint8_t config);
 
 #endif

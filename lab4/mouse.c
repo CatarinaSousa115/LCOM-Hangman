@@ -61,12 +61,31 @@ void (construct_packet)() {
         mouse_packet.bytes[i] = packet_bytes[i];
     }
 
-    mouse_packet.lb = mouse_bytes[0] & MOUSE_LB;
-    mouse_packet.mb = mouse_bytes[0] & MOUSE_MB;
-    mouse_packet.rb = mouse_bytes[0] & MOUSE_RB;
-    mouse_packet.x_ov = mouse_bytes[0] & MOUSE_X_OVFL;
-    mouse_packet.y_ov = mouse_bytes[0] & MOUSE_Y_OVFL;
-    mouse_packet.delta_x = (mouse_bytes[0] & MSB_X_DELTA) ? (0xFF00 | mouse_bytes[1]) : mouse_bytes[1];
-    mouse_packet.delta_y = (mouse_bytes[0] & MSB_Y_DELTA) ? (0xFF00 | mouse_bytes[2]) : mouse_bytes[2];
+    //atribuir os valores corretos ao mouse_packet 
+    mouse_packet.lb = packet_bytes[0] & MOUSE_LB;
+    mouse_packet.mb = packet_bytes[0] & MOUSE_MB;
+    mouse_packet.rb = packet_bytes[0] & MOUSE_RB;
+    mouse_packet.x_ov = packet_bytes[0] & MOUSE_X_OVFL;
+    mouse_packet.y_ov = packet_bytes[0] & MOUSE_Y_OVFL;
 
+    //Se o deslicamento for negativo (MSB_X ou MSB_Y de delta ativo) então presevar só os 8 primeiros bits, caso contrario preservar os 16 bits
+    mouse_packet.delta_x = (packet_bytes[0] & MSB_X_DELTA) ? (0xFF00 | packet_bytes[1]) : packet_bytes[1];
+    mouse_packet.delta_y = (packet_bytes[0] & MSB_Y_DELTA) ? (0xFF00 | packet_bytes[2]) : packet_bytes[2];
+}
+
+int (mouse_config)(uint8_t config) {
+
+uint8_t attemps = 10;
+uint8_t mouse_response;
+
+do {
+    attemps--;
+    if (write_controller(STAT_REG, MOUSE_BYTE_WRITE)) return 1;
+    if (write_controller(OUT_BUF, config)) return 1;
+    tickdelay(micros_to_ticks(3000));
+    if (util_sys_inb(OUT_BUF, &mouse_response)) return 1;
+    if (mouse_response == ACK) return 0;
+  } while (mouse_response != ACK && attemps);
+
+  return 1;
 }
