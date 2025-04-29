@@ -18,14 +18,14 @@ int (read_controller) (uint8_t port, uint8_t *data, uint8_t mouse) {
         //Chama-se esta função para ela ir até Status Register e receber o status do keyboard que vai ser analisado (para deteção de erros)
         if (util_sys_inb(STAT_REG, &status) != 0) return 1;
 
-        //Se "is_mouse" estiver a 1, o output será do rato, se estiver a 0 será do keyboard
-        uint8_t is_mouse = status & BIT(5);
-
         if ((status & OUT_BUF_FULL) != 0) { //O Output buffer está full, logo existem dados para ler/ser processados
             
             if ((status & PARITY_ERROR) != 0) return 1;//se for diferente de 0, o bit do erro está ativo (erro no parity)
 
             if ((status & TIMEOUT_ERROR) != 0) return 1; //erro timeout
+
+            //Se "is_mouse" estiver a 1, o output será do rato, se estiver a 0 será do keyboard
+            uint8_t is_mouse = status & BIT(5);
 
             if ((mouse && !is_mouse) != 0) return 1;  //estava à espera de output do mouse, mas recebeu do teclado
 

@@ -1,7 +1,7 @@
 #include "mouse.h"
 
 int mouse_hook_id = 3; //hook id do mouse
-uint8_t cur_packet_byte = 0; //o rato envia 3 bytes mas so vamos receber 1 por vez
+//uint8_t cur_packet_byte = 0; //o rato envia 3 bytes mas so vamos receber 1 por vez
 
 struct packet mouse_packet;
 
@@ -28,7 +28,7 @@ int (mouse_unsubscribe_int)() {
 
 //o "mouse_ih" vai ser um dos bytes do packet do rato (= 1)
 void (mouse_ih)() {
-    if (read_controller(OUT_BUF, &cur_packet_byte, 1) != 0) {
+    if (read_controller(OUT_BUF, &cur_byte, 1) != 0) {
         printf("Error reading the packet_byte");
     }
 }
@@ -44,9 +44,12 @@ void (organize_packet_bytes)(uint8_t *packet_count) {
     }
 
     //packet já foi construído (bytes 0 a 2)
-    else if (cur_index == 3) {
-        construct_packet();
+    else if (cur_index == 2) {
+        packet_bytes[cur_index] = cur_byte;
+        cur_index++;
+        construct_packet(); // chamado logo após o 3º byte
     }
+    
 
     //não é o byte de controlo logo recebe o delta_x e delta_y
     else if (cur_index > 0){

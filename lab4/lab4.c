@@ -45,6 +45,7 @@ int (mouse_test_packet)(uint32_t cnt) {
   message msg;
   uint8_t irq_set_mouse; 
 
+  
   if(mouse_config(DATA_REPORT_ON) != 0) return 1;
   if (mouse_subscribe_int(&irq_set_mouse) != 0) return 1;
   //if (mouse_enable_data_reporting() != 0) return 1; //Opção dada no enunciado, mais tarde podemos ter de implementar a nossa versão
@@ -71,14 +72,14 @@ int (mouse_test_packet)(uint32_t cnt) {
               cnt--;
             }
           }
+          break;
        }
-    
-      break;
       }
     }
 
+    if(mouse_config(DATA_REPORT_OFF) != 0) return 1;
     if (mouse_unsubscribe_int() != 0) return 1;
-    if(mouse_config(DATA_REPORT_OFF) != 0) return 1;t
+  
 
     return 0;
 }
