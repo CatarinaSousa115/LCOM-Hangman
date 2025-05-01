@@ -80,14 +80,67 @@ int (mouse_test_packet)(uint32_t cnt) {
     if(mouse_config(DATA_REPORT_OFF) != 0) return 1;
     if (mouse_unsubscribe_int() != 0) return 1;
   
-
     return 0;
 }
 
 int (mouse_test_async)(uint8_t idle_time) {
-    /* To be completed */
-    printf("%s(%u): under construction\n", __func__, idle_time);
-    return 1;
+    
+  int ipc_status;
+  message msg;
+  uint8_t irq_set_mouse; 
+  uint8_t irq_set_timer;
+
+  uint8_t time_without_input = idle_time;
+
+  uint32_t timer_freq = sys_hz();
+  
+  if(mouse_config(DATA_REPORT_ON) != 0) return 1;
+  if (mouse_subscribe_int(&irq_set_mouse) != 0) return 1;
+  if (timer_subscribe_int(&irq_set_timer) != 0) return 1;
+  //if (mouse_enable_data_reporting() != 0) return 1; //Opção dada no enunciado, mais tarde podemos ter de implementar a nossa versão
+
+  //ciclo com base no fornecido no guião, para quando todos os packets (cnt) forem lidos
+  while (time_without_input > 0) {
+
+    if (driver_receive(ANY, &msg, &ipc_status) != 0){
+      printf("Error");
+      continue;
+    }
+
+    if (is_ipc_notify(ipc_status)){
+      switch(_ENDPOINT_P(msg.m_source)){
+        case HARDWARE: 
+
+          if (msg.m_notify.interrupts & irq_set_timer) {
+            timer_int_handler();
+
+            if (timer_counter % timer_freq == 0) {  
+              time_without_input--;
+            }
+          }
+
+          if (msg.m_notify.interrupts & irq_set_mouse){  
+            mouse_ih();                               
+            organize_packet_bytes(); 
+
+            if(cur_index == 3) {
+              mouse_print_packet(&mouse_packet);
+              cur_index = 0;
+            }
+
+            timer_counter = 0;
+            time_without_input = idle_time;
+          }
+          break;
+       }
+      }
+    }
+
+    if(mouse_config(DATA_REPORT_OFF) != 0) return 1;
+    if (mouse_unsubscribe_int() != 0) return 1;
+    if (timer_unsubscribe_int() != 0) return 1;
+  
+    return 0;
 
 }
 

@@ -26,7 +26,7 @@ int (mouse_unsubscribe_int)() {
     return 0;
 }
 
-//o "mouse_ih" vai ser um dos bytes do packet do rato (= 1)
+//o "mouse_ih" vai passa a info que o byte é do rato (=1)
 void (mouse_ih)() {
     if (read_controller(OUT_BUF, &cur_byte, 1) != 0) {
         printf("Error reading the packet_byte");

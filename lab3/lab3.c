@@ -111,7 +111,7 @@ int(kbd_test_timed_scan)(uint8_t n) {
 
   uint8_t max_time_without_int = n;
 
-  //"subscreve" a interrupção (pede para ser notificado quando a interrupção (que está em irq_set (???)) acontecer)
+  //"subscreve" a interrupção (pede para ser notificado quando a interrupção (que está em irq_set (???)) acontecer
   if (keyboard_subscribe_int(&irq_set_keyboard) != 0) return 1; //interupção do teclado
   if (timer_subscribe_int(&irq_set_timer) != 0) return 1; //interupção do timer
 
