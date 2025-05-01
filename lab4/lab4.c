@@ -94,9 +94,10 @@ int (mouse_test_async)(uint8_t idle_time) {
 
   uint32_t timer_freq = sys_hz();
   
-  if(mouse_config(DATA_REPORT_ON) != 0) return 1;
+  
   if (mouse_subscribe_int(&irq_set_mouse) != 0) return 1;
   if (timer_subscribe_int(&irq_set_timer) != 0) return 1;
+  if (mouse_config(DATA_REPORT_ON) != 0) return 1;
   //if (mouse_enable_data_reporting() != 0) return 1; //Opção dada no enunciado, mais tarde podemos ter de implementar a nossa versão
 
   //ciclo com base no fornecido no guião, para quando todos os packets (cnt) forem lidos
@@ -136,7 +137,7 @@ int (mouse_test_async)(uint8_t idle_time) {
       }
     }
 
-    if(mouse_config(DATA_REPORT_OFF) != 0) return 1;
+    if (mouse_config(DATA_REPORT_OFF) != 0) return 1;
     if (mouse_unsubscribe_int() != 0) return 1;
     if (timer_unsubscribe_int() != 0) return 1;
   
@@ -145,8 +146,8 @@ int (mouse_test_async)(uint8_t idle_time) {
 }
 
 int (mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
-    /* To be completed */
-    printf("%s: under construction\n", __func__);
+    
+    
     return 1;
 }
 

@@ -9,6 +9,15 @@ uint8_t packet_bytes[3]; //3 bytes que o rato envia
 uint8_t cur_index = 0; //index atual do packet_bytes
 uint8_t cur_byte = 0; //byte atual
 
+//all states
+typedef enum gesture_state {
+    INIT, //estado inicial
+    DRAW_UP, //desenhar a "linha" para cima
+    DRAW_DOWN, //desenhar a "linha" para baixo
+    VERTEX, //"vertex" do desenho (passar do botao esquerdo para o direito)
+    END //estado final
+};
+
 int (mouse_subscribe_int)(uint8_t *bit_no) {
     if (bit_no == NULL) return 1;
 
