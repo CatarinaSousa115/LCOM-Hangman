@@ -10,13 +10,13 @@ uint8_t cur_index = 0; //index atual do packet_bytes
 uint8_t cur_byte = 0; //byte atual
 
 //all states
-typedef enum gesture_state {
+typedef enum {
     INIT, //estado inicial
     DRAW_UP, //desenhar a "linha" para cima
     DRAW_DOWN, //desenhar a "linha" para baixo
     VERTEX, //"vertex" do desenho (passar do botao esquerdo para o direito)
     END //estado final
-};
+} gesture_state;
 
 int (mouse_subscribe_int)(uint8_t *bit_no) {
     if (bit_no == NULL) return 1;
@@ -100,4 +100,103 @@ do {
   } while (mouse_response != ACK && attemps);
 
   return 1;
+}
+
+
+bool process_gesture(struct packet *packet_ptr, uint8_t x_len, uint8_t tolerance) {
+    //membros static para garantir o funcionamento correto e não resetar variaveis sempre que chama
+    static gesture_state state = INIT;
+
+    static int16_t delta_x; //pos x
+    static int16_t delta_y; //pos y
+
+    switch (state) {
+    case INIT:
+        if (packet_ptr->lb && !packet_ptr->mb && !packet_ptr->rb) { //verifica se apenas o botão esquerdo está pressionado
+            
+            //se apenas o botão esquerdo estiver pressionado, colocamos a var aux a 0 e mudamos o state para o DRAW_UP (começo do desenho)
+            delta_x = 0;
+            delta_y = 0;
+            state = DRAW_DOWN;
+        }
+
+        break;
+
+    case DRAW_DOWN:
+        if (packet_ptr->lb && !packet_ptr->mb && !packet_ptr->rb) { //neste caso verifica que o botão esquerdo está pressionado em vez do direito
+            
+            delta_x += packet_ptr->delta_x; //soma o movimento feito ate agora
+            delta_y += packet_ptr->delta_y;
+
+
+            //verifica se cumpriu o deslocameto minimo atribuido a "x_len" para chegar ao vertex do "gesto" que estamos a testar
+            //e se esta de acordo com a tolerancia dada (ao fazermos abs(delta_y - delta_x) vamos ter a diferença de deslocamento entre x e y
+            //que deve ser menos que a tolerancia porque se não o gesto está errado)
+            if (delta_x >= x_len && delta_y >= x_len && abs(delta_y - delta_x) <= tolerance) { 
+
+                //se sim, mudamos o estado
+                state = VERTEX;
+            }
+
+            else { //caso não cumpra alguma das verificações acima vai para o estado inicial
+                state = INIT;
+            }
+        }
+
+        else { //se pararmos de pressionar o "rb" ou pressionarmos mais que 1 botão por vez voltamos para o estado inicial pois o desenho ainda não está feito
+            state = INIT;
+        }
+
+        break;
+
+    case VERTEX:
+        if (packet_ptr->rb && !packet_ptr->lb && !packet_ptr->mb) { //no vertex temos de trocar e em vez de pressionar "lb" passa a ser o "rb"
+            
+            //reset nos deslocamentos porque a logica na verificação do movimento é diferente (move-se para baixo)
+            delta_x = 0;
+            delta_y = 0;
+            state = DRAW_UP; //novo estado
+        } 
+
+        else if (!packet_ptr->lb && !packet_ptr->rb && !packet_ptr->mb) {} //não faz nada, espera para mudar de botoes pressionados
+        
+        else {
+            state = INIT; // Movimentos indevidos entre LB solto e RB pressionado
+        }
+
+        break;
+
+    case DRAW_UP:
+        if (packet_ptr->rb && !packet_ptr->mb && !packet_ptr->lb) { //continua so o botão direito pressionado
+            
+            delta_x += packet_ptr->delta_x; //soma o movimento feito ate agora
+            delta_y += packet_ptr->delta_y;
+        
+            //mesma logica acima so que desta vez para o movimento para cima, logo invertem-se partes
+            if (delta_x >= x_len && -delta_y >= x_len && abs(delta_y + delta_x) <= tolerance) { 
+                    
+                //se sim, mudamos o estado
+                state = END;
+            }
+            
+            else { //caso não cumpra alguma das verificações acima vai para o estado inicial
+                state = INIT;
+            }
+        }
+
+        else { //se pararmos de pressionar o "lb" ou pressionarmos mais que 1 botão por vez voltamos para o estado inicial pois o desenho ainda não está feito
+            state = INIT;
+        }
+
+        break;
+
+    case END:
+
+        // gesto realizado com sucesso
+        state = INIT;
+        return true;
+        break;
+    }
+
+    return false;
 }

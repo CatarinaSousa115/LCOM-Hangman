@@ -18,4 +18,6 @@ void (organize_packet_bytes)();
 
 int (mouse_config)(uint8_t config);
 
+bool (process_gesture)(struct packet *packet_ptr, uint8_t x_len, uint8_t tolerance);
+
 #endif

@@ -147,8 +147,50 @@ int (mouse_test_async)(uint8_t idle_time) {
 
 int (mouse_test_gesture)(uint8_t x_len, uint8_t tolerance) {
     
-    
-    return 1;
+  int ipc_status;
+  message msg;
+  uint8_t irq_set_mouse; 
+
+  
+  if(mouse_config(DATA_REPORT_ON) != 0) return 1;
+  if (mouse_subscribe_int(&irq_set_mouse) != 0) return 1;
+  //if (mouse_enable_data_reporting() != 0) return 1; //Opção dada no enunciado, mais tarde podemos ter de implementar a nossa versão
+
+
+  bool gesture_completed = false;
+
+  //ciclo com base no fornecido no guião, para quando todos os packets (cnt) forem lidos
+  while (!gesture_completed) {
+    if (driver_receive(ANY, &msg, &ipc_status) != 0) {
+      printf("Error");
+      continue;
+    }
+
+    if (is_ipc_notify(ipc_status)) {
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:
+          if (msg.m_notify.interrupts & irq_set_mouse) {
+            mouse_ih();
+            organize_packet_bytes();
+
+            if (cur_index == 3) {
+              mouse_print_packet(&mouse_packet);
+              cur_index = 0;
+              
+              if (process_gesture(&mouse_packet, x_len, tolerance)) {
+                gesture_completed = true;
+              }
+            }
+          }
+          break;
+      }
+    }
+  }
+
+  if(mouse_config(DATA_REPORT_OFF) != 0) return 1;
+  if (mouse_unsubscribe_int() != 0) return 1;
+  
+  return 0;
 }
 
 int (mouse_test_remote)(uint16_t period, uint8_t cnt) {
