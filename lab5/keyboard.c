@@ -85,3 +85,42 @@ int (code_size)(uint8_t scancode){
     return 1;
 }
 
+int wait_for_esc_press() {
+    int ipc_status;
+    message msg;
+    int r;
+    uint8_t bit_no;
+    int irq_set;
+  
+    if (keyboard_subscribe_int(&bit_no)) return 1;
+    irq_set = bit_no;
+  
+    bool esc_released = false;
+    while (!esc_released) {
+      if ((r = driver_receive(ANY, &msg, &ipc_status)) != 0) {
+        printf("driver_receive failed with: %d\n", r);
+        continue;
+      }
+  
+      if (is_ipc_notify(ipc_status)) {
+        switch (_ENDPOINT_P(msg.m_source)) {
+          case HARDWARE:
+            if (msg.m_notify.interrupts & irq_set) {
+              keyboard_ih(); // vai dar update ao global 'scancode'
+  
+              // O break code do ESC é 0x81
+              if (scancode == 0x81) {
+                esc_released = true;
+              }
+            }
+            break;
+        }
+      }
+    }
+  
+    if (keyboard_unsubscribe_int()) return 1;
+    return 0;
+  }
+
+  
+

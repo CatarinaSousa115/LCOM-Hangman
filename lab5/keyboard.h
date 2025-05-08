@@ -22,5 +22,7 @@ bool is_makecode(uint8_t scancode);
 
 int code_size(uint8_t scancode);
 
+int wait_for_esc_press();
+
 #endif
 
