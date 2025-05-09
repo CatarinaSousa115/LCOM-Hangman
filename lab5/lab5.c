@@ -57,14 +57,29 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
                           uint16_t width, uint16_t height, uint32_t color) {
   
   //mapear a memoria que vamos usar
-  if (map_video_memory(mode) != 0) return 1;
+  if (map_video_memory(mode) != 0) {
+    vg_exit();  
+    return 1;
+  }
 
   if (vg_init_graphic(mode) != 0) return 1;
 
-  //desenhar o retangulo
-  if (vg_draw_rectangle(x, y, width, height, color) != 0) return 1;
+  uint32_t new_color;
+  if (normalize_color(color, &new_color) != 0) { //necessario para normalizar as corer por ex quando se usa o modo 110
+    vg_exit();
+    return 1;
+  }
 
-  if (end_loop_ESC() != 0) return 1;
+  //desenhar o retangulo
+  if (vg_draw_rectangle(x, y, width, height, new_color) != 0) {
+    vg_exit();
+    return 1;
+  }
+
+  if (end_loop_ESC() != 0) {
+    vg_exit();
+    return 1;
+  }
 
   if (vg_exit() != 0) return 1;
 
