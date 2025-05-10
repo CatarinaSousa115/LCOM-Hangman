@@ -12,6 +12,7 @@
 #include "keyboard.h"
 
 extern uint8_t scancode;
+extern vbe_mode_info_t video_info;
 
 // Any header files included below this line should have been created by you
 
@@ -87,11 +88,35 @@ int(video_test_rectangle)(uint16_t mode, uint16_t x, uint16_t y,
 }
 
 int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, uint8_t step) {
-  /* To be completed */
-  printf("%s(0x%03x, %u, 0x%08x, %d): under construction\n", __func__,
-         mode, no_rectangles, first, step);
+  
+  if (map_video_memory(mode) != 0) {
+    vg_exit();  
+    return 1;
+  }
 
-  return 1;
+  if (vg_init_graphic(mode) != 0) return 1;
+
+  //como todos os retangulos vao ter o mesmo tamanho, primeiro calcular esse tamanho
+  RectangleSize rectangle;
+  if (calculate_size(&rectangle, no_rectangles, video_info.XResolution, video_info.YResolution) != 0) {
+      vg_exit();
+      return 1;
+  }
+
+  //com esse tamanho mandar desenhar o padrao
+  if (draw_pattern(&rectangle, no_rectangles, first, step) != 0) {
+      vg_exit();
+      return 1;
+  }
+
+  if (end_loop_ESC() != 0) {
+    vg_exit();
+    return 1;
+  }
+
+  if (vg_exit() != 0) return 1;
+
+  return 0;
 }
 
 int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {

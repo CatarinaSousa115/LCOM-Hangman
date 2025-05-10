@@ -13,6 +13,11 @@
 #define VBE_CTRLR_INFO 0x4F00
 #define BIOS_SET_VIDEO_MODE 0x00
 
+#define DIRECT_COLOR 0x06
+
+//macros para retirar a componente de cada cor
+
+
 #endif
 
 

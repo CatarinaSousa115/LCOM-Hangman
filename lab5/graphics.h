@@ -4,6 +4,15 @@
 #include <lcom/lcf.h>
 #include "VBE.h"
 
+typedef struct {
+    uint16_t width; //largura do retângulo
+    uint16_t height; // altura do retângulo
+} RectangleSize;
+
+typedef struct {
+    uint8_t r, g, b; //auxiliar para guardar o RGB
+} RGBColor;
+
 int (end_loop_ESC)();
 
 int (vg_init_graphic)(uint16_t mode);
@@ -17,6 +26,18 @@ int (vg_draw_pixel)(uint16_t x, uint16_t y, uint32_t color);
 int (vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color);
 
 int normalize_color(uint32_t color, uint32_t *new_color);
+
+int calculate_size(RectangleSize* rectangle, uint8_t no_rect, uint16_t x, uint16_t y);
+
+uint32_t pack_rgb(RGBColor* rgb);
+
+int draw_pattern(RectangleSize* rectangle, uint8_t no_rect, uint32_t first, uint8_t step);
+
+uint32_t R(uint32_t color);
+
+uint32_t G(uint32_t color);
+
+uint32_t B(uint32_t color);
 
 #endif
 

@@ -2,7 +2,6 @@
 #include "graphics.h"
 #include "keyboard.h"
 
-
 extern uint8_t scancode;
 
 // Variáveis globais acessíveis pelas funções de desenho
@@ -13,33 +12,35 @@ uint16_t v_res;
 uint8_t bytes_per_pixel;
 
 int end_loop_ESC() {
-    int ipc_status;  
-    int r; 
-    uint8_t irq_set; 
-    message msg; 
+  //loop como os usados antes
 
-    if (keyboard_subscribe_int(&irq_set) != 0) return 1; 
+  int ipc_status;  
+  int r; 
+  uint8_t irq_set; 
+  message msg; 
 
-    while(scancode != ESC_BREAKCODE) {      
-        if( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
-            printf("driver_receive failed with: %d", r);
-            continue;
-        }
+  if (keyboard_subscribe_int(&irq_set) != 0) return 1; 
 
-        if (is_ipc_notify(ipc_status)) { 
-            switch (_ENDPOINT_P(msg.m_source)) {
-                case HARDWARE: 
-                    if (msg.m_notify.interrupts & irq_set) {
-                        keyboard_ih(); 
-                    }
-                    break;
-            }
-        } 
-    }
+  while(scancode != ESC_BREAKCODE) {      
+      if( (r = driver_receive(ANY, &msg, &ipc_status)) != 0 ) {
+          printf("driver_receive failed with: %d", r);
+          continue;
+      }
 
-    if (keyboard_unsubscribe_int() != 0) return 1; 
+      if (is_ipc_notify(ipc_status)) { 
+          switch (_ENDPOINT_P(msg.m_source)) {
+              case HARDWARE: 
+                  if (msg.m_notify.interrupts & irq_set) {
+                      keyboard_ih(); 
+                  }
+                  break;
+          }
+      } 
+  }
 
-    return 0; 
+  if (keyboard_unsubscribe_int() != 0) return 1; 
+
+  return 0; 
 }
 
 int vg_init_graphic(uint16_t mode) {
@@ -60,10 +61,12 @@ int vg_init_graphic(uint16_t mode) {
 
 
 int (vg_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
-  if (x >= h_res || y >= v_res) return 1;  // fora do ecrã
+  if (x >= h_res || y >= v_res) return 1;  //ver se n esta fora do ecrã
 
+  //calcular o index do pixel
   uint32_t index = (h_res * y + x) * bytes_per_pixel;
 
+  //desenha o pixel na memoria na pos "index" de acordo com o numero de bytes que serao copiados (bytes_per_pixel)
   memcpy(&video_mem[index], &color, bytes_per_pixel);
   
   return 0;
@@ -72,6 +75,7 @@ int (vg_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
 
 int (vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 
+  //para cada pixel da linha, desenhar o proprio pixel
   for (unsigned i = 0; i < len; i++) {
     if (vg_draw_pixel(x + i, y, color) != 0) return 1;
   }
@@ -82,6 +86,7 @@ int (vg_draw_hline)(uint16_t x, uint16_t y, uint16_t len, uint32_t color) {
 
 int (vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color) {
 
+  //desenhar o retangulo linha por linha
   for (unsigned i = 0; i < height ; i++) {
 
     if (vg_draw_hline(x, y+i, width, color) != 0) return 1;
@@ -137,5 +142,107 @@ int normalize_color(uint32_t color, uint32_t *new_color) {
   }
 
   return 0;
+}
+
+int calculate_size(RectangleSize* rectangle, uint8_t no_rect, uint16_t x, uint16_t y) {
+  if (no_rect == 0) return 1; //para evitar dividir por zero
+    
+    rectangle->width = x / no_rect;
+    rectangle->height = y / no_rect;
+    
+    return 0;
+}
+
+uint32_t generate_color(uint8_t row, uint8_t col, uint8_t no_rect, uint32_t first, uint8_t step) {
+
+    if (video_info.MemoryModel == DIRECT_COLOR) {
+        
+        //caso seja modo direto temos de calcular componentes RGB
+        RGBColor rgb;
+
+        //calculo igual ao dado no lab
+        rgb.r = (R(first) + col * step) % (1 << video_info.RedMaskSize);
+        rgb.g = (G(first) + row * step) % (1 << video_info.GreenMaskSize);
+        rgb.b = (B(first) + (col + row) * step) % (1 << video_info.BlueMaskSize);
+        
+        //organizar o rgb
+        return pack_rgb(&rgb);
+    } 
+    
+    else {
+        //modo indexado, calculo igual ao dado no lab
+        return (first + (row * no_rect + col) * step) % (1 << video_info.BitsPerPixel);
+    }
+}
+
+uint32_t pack_rgb(RGBColor* rgb) {
+    
+  //basicamente, vamos deslocar os bits para a sua posiçao correta de acordo com o "FieldPosition" da cor
+  uint32_t packed_red = rgb->r << video_info.RedFieldPosition;
+  uint32_t packed_green = rgb->g << video_info.GreenFieldPosition;
+  uint32_t packed_blue = rgb->b << video_info.BlueFieldPosition;
+
+  //depois de os bits estarem deslocados podemos simplesmente combina-los todos para formar o rbg final
+  uint32_t final_rgb = packed_red | packed_green | packed_blue;
+
+  return final_rgb;
+}
+
+int draw_pattern(RectangleSize* rectangle, uint8_t no_rect, uint32_t first, uint8_t step) {
+
+  //para toda a tela, ir desenhando o padrao
+  for (uint8_t row = 0; row < no_rect; row++) {
+    for (uint8_t col = 0; col < no_rect; col++) {
+
+      //gerar a cor usada para o respetivo retangulo
+      uint32_t color = generate_color(row, col, no_rect, first, step);
+      
+      //calcular o inicio do retangulo (SE)
+      uint16_t x = col * rectangle->width;
+      uint16_t y = row * rectangle->height;
+            
+      //desenhar o retangulo na pos certa com a cor certa
+      if (vg_draw_rectangle(x, y, rectangle->width, rectangle->height, color) != 0) {
+        return 1;
+      }
+    }
+  }
+
+  return 0;
+}
+
+
+uint32_t R(uint32_t color) {
+    
+  //temos de criar uma mascara de tamanho n para guardar os bits vermelhos 
+  uint32_t red_mask = (1 << video_info.RedMaskSize) - 1;
+    
+  //colocar os bits vermelhos na posição certa
+  uint32_t shifted_color = color >> video_info.RedFieldPosition;
+    
+  //ao fazer o "and", apenas os bits vermelhos ficam ativos
+  uint32_t red_component = shifted_color & red_mask;
+    
+  return red_component;
+}
+
+uint32_t G(uint32_t color) {
+   
+  //mesma logica de cima
+  uint32_t green_mask = (1 << video_info.GreenMaskSize) - 1;
+  uint32_t shifted_color = color >> video_info.GreenFieldPosition;
+  uint32_t green_component = shifted_color & green_mask;
+    
+  return green_component;
+}
+
+uint32_t B(uint32_t color) {
+    
+  uint32_t blue_mask = (1 << video_info.BlueMaskSize) - 1;
+
+  //como os "bits azuis" estao nos bits menos significativos, não precisa deslocar, apenas fazer o "and" com a mascara  
+  uint32_t blue_component = color & blue_mask;
+    
+  return blue_component;
 }
 
