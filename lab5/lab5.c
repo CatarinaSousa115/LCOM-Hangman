@@ -120,10 +120,35 @@ int(video_test_pattern)(uint16_t mode, uint8_t no_rectangles, uint32_t first, ui
 }
 
 int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
-  /* To be completed */
-  printf("%s(%8p, %u, %u): under construction\n", __func__, xpm, x, y);
+  
+  if (map_video_memory(MODE_105) != 0) {
+    vg_exit();  
+    return 1;
+  }
 
-  return 1;
+  if (vg_init_graphic(MODE_105) != 0) return 1;
+
+  xpm_image_t img;
+  uint8_t *pixmap = xpm_load(xpm, XPM_INDEXED, &img);
+  
+  if (pixmap == NULL) {
+    vg_exit();
+    return 1;
+  }
+
+  if (draw_xpm(pixmap, &img, x, y) != 0) {
+    vg_exit();
+    return 1;
+  }
+
+  if (end_loop_ESC() != 0) {
+    vg_exit();
+    return 1;
+  }
+
+  if (vg_exit() != 0) return 1;
+
+  return 0;
 }
 
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,

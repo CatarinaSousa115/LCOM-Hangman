@@ -15,8 +15,7 @@
 
 #define DIRECT_COLOR 0x06
 
-//macros para retirar a componente de cada cor
-
+#define MODE_105 0x105
 
 #endif
 

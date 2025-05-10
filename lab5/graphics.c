@@ -246,3 +246,19 @@ uint32_t B(uint32_t color) {
   return blue_component;
 }
 
+
+int draw_xpm(uint8_t *pixmap, xpm_image_t *img, uint16_t x, uint16_t y) {
+  
+  for (int row = 0 ; row < img->height ; row++) {
+    for (int col = 0 ; col < img->width ; col++) {
+      
+      //primeiro desenhar o pixel
+      if (vg_draw_pixel(x + col, y + row, *pixmap) != 0) return 1;
+
+      //depos avançar
+      pixmap++; 
+    }
+  }
+
+  return 0;
+}
