@@ -153,11 +153,97 @@ int(video_test_xpm)(xpm_map_t xpm, uint16_t x, uint16_t y) {
 
 int(video_test_move)(xpm_map_t xpm, uint16_t xi, uint16_t yi, uint16_t xf, uint16_t yf,
                      int16_t speed, uint8_t fr_rate) {
-  /* To be completed */
-  printf("%s(%8p, %u, %u, %u, %u, %d, %u): under construction\n",
-         __func__, xpm, xi, yi, xf, yf, speed, fr_rate);
+  
+  int msg_status;
+  message msg;
+  uint8_t timer_irq, kbd_irq;
 
-  return 1;
+  //ativar as interrupções e configurar a frequencia desejada
+  if (keyboard_subscribe_int(&kbd_irq) != 0) return 1;
+  if (timer_subscribe_int(&timer_irq) != 0) return 1;
+  if (timer_set_frequency(0, fr_rate) != 0) return 1;
+  
+  if (map_video_memory(MODE_105) != 0) {
+    vg_exit();  
+    return 1;
+  }
+
+  if (vg_init_graphic(MODE_105) != 0) return 1;
+
+  //auxiliares
+  int current_x = xi;
+  int current_y = yi;
+
+  int moving_horizontally = ((yi == yf) && (xi != xf));
+  int moving_vertically = ((xi == xf) && (yi != yf));
+  
+  //movimento inválido
+  if (!moving_horizontally && !moving_vertically) {
+    vg_exit();
+    return 1;
+  }
+
+  //preparar e desenhar o primeiro xpm
+  xpm_image_t img;
+  uint8_t *pixmap = xpm_load(xpm, XPM_INDEXED, &img);
+  
+  if (pixmap == NULL) {
+    vg_exit();
+    return 1;
+  }
+
+  if (draw_xpm(pixmap, &img, xi, yi) != 0) {
+    vg_exit();
+    return 1;
+  }
+
+
+  while (scancode != ESC_BREAKCODE && (xi < xf || yi < yf)) {
+    if (driver_receive(ANY, &msg, &msg_status) != 0) continue;
+
+    if (is_ipc_notify(msg_status)) {
+      switch (_ENDPOINT_P(msg.m_source)) {
+        case HARDWARE:
+          if (msg.m_notify.interrupts & kbd_irq) {
+            keyboard_ih();
+          }
+
+          if (msg.m_notify.interrupts & timer_irq) {
+            
+            if (vg_draw_rectangle(current_x, current_y, img.width, img.height, 0x000000) != 0) {
+                vg_exit();
+                return 1;
+              }
+
+              int move_amount;
+
+              if (moving_horizontally) {
+                move_amount = calculate_move_amount(speed, xf, current_x);
+                current_x += move_amount;
+              } 
+              
+              else { // moving_vertically
+                move_amount = calculate_move_amount(speed, yf, current_y);
+                current_y += move_amount;
+              }
+
+              // Redesenha na nova posição
+              if (draw_xpm(pixmap, &img, current_x, current_y) != 0) {
+                vg_exit();
+                return 1;
+              }
+          }
+          break;
+      }
+    }
+  }
+
+  if (vg_exit() != 0) return 1;
+
+  if (timer_unsubscribe_int() != 0) return 1;
+  if (keyboard_unsubscribe_int() != 0) return 1;
+
+  return 0;
 }
 
 int(video_test_controller)() {

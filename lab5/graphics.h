@@ -41,5 +41,7 @@ uint32_t B(uint32_t color);
 
 int draw_xpm(uint8_t *pixmap, xpm_image_t *img, uint16_t x, uint16_t y);
 
+int calculate_move_amount(int speed, int target_pos, int current_pos);
+
 #endif
 

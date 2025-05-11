@@ -262,3 +262,19 @@ int draw_xpm(uint8_t *pixmap, xpm_image_t *img, uint16_t x, uint16_t y) {
 
   return 0;
 }
+
+int calculate_move_amount(int speed, int target_pos, int current_pos) {
+    int remaining_mov = target_pos - current_pos;
+    
+    if (speed > 0) {
+      if (remaining_mov < speed) {
+          return remaining_mov;
+      } else {
+          return speed;
+      }
+  } 
+  else {
+    return 1;
+  }
+}
+
