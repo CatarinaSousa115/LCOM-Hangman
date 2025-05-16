@@ -2,5 +2,9 @@
     "cSpell.words": [
         "irqrmpolicy",
         "irqsetpolicy"
-    ]
+    ],
+    "files.associations": {
+        "queue": "c",
+        "stack": "c"
+    }
 }
