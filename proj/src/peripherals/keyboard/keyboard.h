@@ -2,7 +2,7 @@
 #define KEYBOARD_H
 
 #include <lcom/lcf.h>
-#include "i8042.h"
+#include "../i8042.h"
 #include <stdbool.h>
 #include <stdint.h>
 

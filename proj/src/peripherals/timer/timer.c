@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "i8254.h"
+#include "../i8254.h"
 
 int timer_hook_id = 0; //variavel que vai armazenar o id da interrupção (hook)
 uint32_t timer_counter = 0; //"conta" o número de interrupçoes

@@ -1,6 +1,6 @@
 #include <lcom/lcf.h>
 #include "graphics.h"
-#include "keyboard.h"
+#include "../keyboard/keyboard.h"
 
 extern uint8_t scancode;
 
@@ -277,4 +277,15 @@ int calculate_move_amount(int speed, int target_pos, int current_pos) {
     return 1;
   }
 }
+
+void graphics_exit(void) {
+  reg86_t reg86;
+  memset(&reg86, 0, sizeof(reg86));
+  reg86.ax = 0x0003;    // BIOS video mode 0x03: 80x25 text mode
+  reg86.intno = 0x10;   // BIOS video interrupt
+
+  sys_int86(&reg86);    // Call BIOS interrupt to set video mode
+}
+
+
 
