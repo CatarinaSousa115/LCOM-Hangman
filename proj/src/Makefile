@@ -9,7 +9,7 @@ PROG=proj
 .PATH: ${.CURDIR}/game
 .PATH: ${.CURDIR}/assets
 
-SRCS = 	main.c timer.c utils.c graphics.c keyboard.c mouse.c hangman.c ui.c words.c k_controller.c
+SRCS = 	main.c timer.c utils.c graphics.c keyboard.c mouse.c hangman.c ui.c words.c k_controller.c menu.c
 
 
 # additional compilation flags

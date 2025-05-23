@@ -1,6 +1,8 @@
 // Initializes peripherals, starts the game loop.
 
+#include "assets/pixmap.h"
 #include "game/hangman.h"
+#include "game/menu.h"
 #include "peripherals/graphics/VBE.h"
 #include "peripherals/graphics/graphics.h"
 #include "peripherals/i8042.h"
@@ -9,6 +11,7 @@
 #include "peripherals/mouse/mouse.h"
 
 extern uint8_t packet_byte_index;
+uint8_t irq_kb, irq_mouse, irq_timer;
 
 bool gameRunning = true;
 
@@ -24,10 +27,17 @@ int(main)(int argc, char *argv[]) {
   return 0;
 }
 
-int process_interrupts() {
-  int ipc_status;
-  message msg;
-  uint8_t irq_kb, irq_mouse, irq_timer;
+int init_devices() {
+
+  if (map_video_memory(0x14C) != 0) {
+    return 1;
+  }
+
+  // Initialize graphics mode
+  if (vg_init_graphic(0x14C) != 0) {
+    printf("Failed to initialize graphics mode. Exiting...\n");
+    return 1;
+  }
 
   // Subscribe to interrupts
   if (timer_subscribe_int(&irq_timer))
@@ -40,6 +50,25 @@ int process_interrupts() {
   // Enable mouse data reporting
   if (mouse_enable_data_reporting())
     return 1;
+
+  return 0;
+}
+
+int remove_devices() {
+  // Unsubscribe from interrupts
+  if (mouse_unsubscribe_int())
+    return 1;
+  if (keyboard_unsubscribe_int())
+    return 1;
+  if (timer_unsubscribe_int())
+    return 1;
+
+  return 0;
+}
+
+int process_interrupts() {
+  int ipc_status;
+  message msg;
 
   while (gameRunning) {
     if (driver_receive(ANY, &msg, &ipc_status) != 0) {
@@ -58,7 +87,9 @@ int process_interrupts() {
           // Keyboard interrupt
           if (msg.m_notify.interrupts & irq_kb) {
             kbc_ih();
-            // Add keyboard-related logic here
+            if (scancode == 0x01) {
+              gameRunning = false; // Exit the game loop
+            }
           }
           // Mouse interrupt
           if (msg.m_notify.interrupts & irq_mouse) {
@@ -88,17 +119,20 @@ int process_interrupts() {
 }
 
 int(proj_main_loop)(int argc, char *argv[]) {
-  // Initialize graphics mode
-  if (vg_init_graphic(0x14C) != 0) {
-    printf("Failed to initialize graphics mode. Exiting...\n");
+
+  if (init_devices())
+    return 1;
+
+
+
+  menu_init();
+  // Exit graphics mode
+   if (process_interrupts() != 0) {
+    printf("Error during interrupt processing.\n");
     return 1;
   }
 
-  // Process interrupts
-  if (process_interrupts())
-    return 1;
-
-  // Exit graphics mode
-  vg_exit();
+  remove_devices();
+  graphics_exit();
   return 0;
 }
