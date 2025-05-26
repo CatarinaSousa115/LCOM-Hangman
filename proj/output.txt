@@ -1,2 +1,3 @@
 Drawing test rectangle...
 Failed to read status register
+Error during interrupt processing.

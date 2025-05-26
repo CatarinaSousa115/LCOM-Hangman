@@ -1,6 +1,7 @@
 // Initializes peripherals, starts the game loop.
 
 #include "assets/pixmap.h"
+#include "assets/font.h"
 #include "game/hangman.h"
 #include "game/menu.h"
 #include "peripherals/graphics/VBE.h"
@@ -86,7 +87,7 @@ int process_interrupts() {
           }
           // Keyboard interrupt
           if (msg.m_notify.interrupts & irq_kb) {
-            kbc_ih();
+            keyboard_ih();
             if (scancode == 0x01) {
               gameRunning = false; // Exit the game loop
             }
