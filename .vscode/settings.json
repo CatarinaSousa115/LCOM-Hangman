@@ -4,7 +4,10 @@
         "irqsetpolicy"
     ],
     "files.associations": {
+        "*.embeddedhtml": "html",
         "queue": "c",
-        "stack": "c"
+        "stack": "c",
+        "sstream": "cpp",
+        "graphics.h": "c"
     }
 }

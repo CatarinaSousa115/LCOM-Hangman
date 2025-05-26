@@ -19,7 +19,10 @@ const uint8_t* get_font_bitmap(char c);
 void print_font_bitmap(char c);
 
 
-int draw_letter(char c, int x, int y, uint32_t color);
+// type int to indicate success (0) or failure (1)
+
+int draw_letter(char c, int x, int y, uint32_t color, int size);
+int draw_string(const char* str, int x, int y, uint32_t color, int size);
 
 #endif // FONT_H
 

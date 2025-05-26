@@ -157,20 +157,23 @@ void print_font_bitmap(char c) {
 }
 
 
-int draw_letter(char c, int x, int y, uint32_t color) {
+int draw_letter(char c, int x, int y, uint32_t color, int size) {
     const uint8_t* bitmap = get_font_bitmap(c);
-    if (!bitmap) {
+    if (!bitmap || size <= 0) {
         return 1; // Character not supported
     }
-
     // Iterate over the 8x8 bitmap
     for (int row = 0; row < 8; row++) {
         for (int col = 0; col < 8; col++) {
             // Check if the pixel is "on" in the bitmap
-            if (bitmap[row] & (1 << (7 - col))) {
+            if (bitmap[row] & (1 << col)) {
                 // Draw the pixel using the graphics function
-                if (vg_draw_pixel(x + col, y + row, color) != 0) {
-                    return 1; // Failed to draw pixel
+                for (int i = 0; i < size; i++) {
+                    for (int j = 0; j < size; j++) {
+                        if (vg_draw_pixel(x + col * size + i, y + row * size + j, color) != 0) {
+                            return 1; // Failed to draw pixel
+                        }
+                    }
                 }
             }
         }
@@ -178,3 +181,23 @@ int draw_letter(char c, int x, int y, uint32_t color) {
 
     return 0; // Success
 }
+
+
+
+int draw_string(const char *str, int x, int y, uint32_t color, int size) {
+    if (!str || size <= 0) return 1;
+
+    while (*str) {
+        if (draw_letter(*str, x, y, color, size) != 0) {
+            return 1; // Failed to draw letter
+        }
+        x += 8 * size; // Move to the right for the next character (8 pixels wide font)
+        str++;
+    }
+
+    return 0; // Success
+}
+
+
+
+

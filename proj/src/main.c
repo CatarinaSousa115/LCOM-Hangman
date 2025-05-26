@@ -11,6 +11,7 @@
 #include "peripherals/keyboard/keyboard.h"
 #include "peripherals/mouse/mouse.h"
 
+extern uint8_t scancode;
 extern uint8_t packet_byte_index;
 uint8_t irq_kb, irq_mouse, irq_timer;
 
@@ -88,7 +89,7 @@ int process_interrupts() {
           // Keyboard interrupt
           if (msg.m_notify.interrupts & irq_kb) {
             keyboard_ih();
-            if (scancode == 0x01) {
+            if (scancode == ESC_BREAKCODE) {
               gameRunning = false; // Exit the game loop
             }
           }
@@ -128,7 +129,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
 
   menu_init();
   // Exit graphics mode
-   if (process_interrupts() != 0) {
+  if (process_interrupts() != 0) {
     printf("Error during interrupt processing.\n");
     return 1;
   }

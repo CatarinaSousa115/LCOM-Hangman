@@ -3,16 +3,19 @@
 #include "../peripherals/graphics/graphics.h"
 
 void menu_init() {
-  if (vg_init_graphic(0x14C) != 0) {
-    printf("Failed to initialize graphics mode. Exiting...\n");
-    return;
+  
+
+  if (vg_draw_rectangle(150,150,100,100,0xFFFFFF) != 0) {
+    printf("Failed to draw rectangle\n");
   }
 
-  printf("Drawing test rectangle...\n");
-  if (draw_letter('A', 150, 150, 0xFFFFFF) != 0) {
+   if (draw_string("Hello-world !", 180, 180, 0xF47685, 1) != 0) {
     printf("Failed to draw letter 'A'.\n");
   }
+
+  
   return;
 }
+
 
 
