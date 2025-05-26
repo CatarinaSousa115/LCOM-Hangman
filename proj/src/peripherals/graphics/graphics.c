@@ -281,10 +281,14 @@ int calculate_move_amount(int speed, int target_pos, int current_pos) {
 void graphics_exit(void) {
   reg86_t reg86;
   memset(&reg86, 0, sizeof(reg86));
-  reg86.ax = 0x0003;    // BIOS video mode 0x03: 80x25 text mode
+  reg86.ah = 0x00;    // BIOS video mode 0x03: 80x25 text mode
+  reg86.al = 0x03;
   reg86.intno = 0x10;   // BIOS video interrupt
 
-  sys_int86(&reg86);    // Call BIOS interrupt to set video mode
+
+  if (sys_int86(&reg86) != 0){
+    printf ("video erro");
+  }    // Call BIOS interrupt to set video mode
 }
 
 

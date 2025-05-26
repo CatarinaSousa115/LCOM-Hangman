@@ -1,7 +1,7 @@
 // Initializes peripherals, starts the game loop.
 
-#include "assets/pixmap.h"
 #include "assets/font.h"
+#include "assets/pixmap.h"
 #include "game/hangman.h"
 #include "game/menu.h"
 #include "peripherals/graphics/VBE.h"
@@ -57,14 +57,22 @@ int init_devices() {
 }
 
 int remove_devices() {
-  // Unsubscribe from interrupts
-  if (mouse_unsubscribe_int())
-    return 1;
-  if (keyboard_unsubscribe_int())
-    return 1;
-  if (timer_unsubscribe_int())
+  if (vg_exit() != 0)
     return 1;
 
+  // Unsubscribe from interrupts
+  if (mouse_unsubscribe_int()) {
+    printf("Error during mouse processing.\n");
+    return 1;
+  }
+  if (keyboard_unsubscribe_int()) {
+    printf("Error during keyboard processing.\n");
+    return 1;
+  }
+  if (timer_unsubscribe_int()) {
+    printf("Error during timer processing.\n");
+    return 1;
+  }
   return 0;
 }
 
@@ -89,6 +97,8 @@ int process_interrupts() {
           // Keyboard interrupt
           if (msg.m_notify.interrupts & irq_kb) {
             keyboard_ih();
+
+            kbd_print_scancode(is_makecode(scancode), code_size(scancode), &scancode);
             if (scancode == ESC_BREAKCODE) {
               gameRunning = false; // Exit the game loop
             }
@@ -109,14 +119,6 @@ int process_interrupts() {
     }
   }
 
-  // Unsubscribe from interrupts
-  if (mouse_unsubscribe_int())
-    return 1;
-  if (keyboard_unsubscribe_int())
-    return 1;
-  if (timer_unsubscribe_int())
-    return 1;
-
   return 0;
 }
 
@@ -124,8 +126,6 @@ int(proj_main_loop)(int argc, char *argv[]) {
 
   if (init_devices())
     return 1;
-
-
 
   menu_init();
   // Exit graphics mode
@@ -135,6 +135,6 @@ int(proj_main_loop)(int argc, char *argv[]) {
   }
 
   remove_devices();
-  graphics_exit();
+  //graphics_exit();
   return 0;
 }

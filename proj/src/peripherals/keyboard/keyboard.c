@@ -26,9 +26,8 @@ int (keyboard_subscribe_int)(uint8_t *bit_no) {
 }
 
 int (keyboard_unsubscribe_int)() {
-    if (!sys_irqrmpolicy(&keyboard_hook_id)) return 1;
     
-    return 0;
+    return sys_irqrmpolicy(&keyboard_hook_id);
 }
 
 

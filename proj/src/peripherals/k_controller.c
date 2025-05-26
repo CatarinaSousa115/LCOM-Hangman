@@ -19,17 +19,18 @@ int (read_controller) (uint8_t port, uint8_t *data, uint8_t mouse) {
 
 
         if ((keyboard_status & OUT_BUF_FULL) != 0) { //O Output buffer está full, logo existem dados para ler/ser processados
+
+            //se não existir erro no status (verificado pela leitura da porta 0x64 (status register)) então podemos passar a leitura da "data"
+            //que irá estar na "port" e processa-la posteriormente
+            if (util_sys_inb(port, data) != 0) return 1;
             
             if ((keyboard_status & PARITY_ERROR) != 0) return 1;//se for diferente de 0, o bit do erro está ativo (erro no parity)
 
             if ((keyboard_status & TIMEOUT_ERROR) != 0) return 1; //erro timeout
 
             if (mouse && !(keyboard_status & AUX)) return 1; //se o mouse não estiver ativo e o bit 5 do status register não estiver ativo, então existe erro
+            
             if (!mouse && (keyboard_status & AUX)) return 1; //se o mouse estiver ativo e o bit 5 do status register estiver ativo, então existe erro
-
-            //se não existir erro no status (verificado pela leitura da porta 0x64 (status register)) então podemos passar a leitura da "data"
-            //que irá estar na "port" e processa-la posteriormente
-            if (util_sys_inb(port, data) != 0) return 1;
 
             return 0;
         }
@@ -61,7 +62,7 @@ int (write_controller) (uint8_t port, uint8_t data) {
             //se existir algo a escrever (verificado pela mascara de bits aplicada no "keyboard_status")
             //e iremos então escrever o "data" na determinada "port" com a ajuda de "sys_outb()" para que o controlador a receba
             if (sys_outb(port, data) != 0) return 1;
-
+            
             return 0;
         }
 
