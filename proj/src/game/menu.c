@@ -18,40 +18,42 @@ void menu_init() {
 }
 
 void draw_options() {
-  // Calculate the horizontal center of the screen
-  int x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
+    // Define the labels for the buttons
+    const char *labels[] = {"Start", "Settings", "Exit"};
+    const int num_labels = 3;
 
-  // Calculate the total height of all buttons and spacings
-  int total_height = (3 * BUTTON_HEIGHT) + (2 * BUTTON_SPACING);
+    // Calculate the total height of all buttons and spacings
+    int total_height = (num_labels * BUTTON_HEIGHT) + ((num_labels - 1) * BUTTON_SPACING);
 
-  // Calculate the vertical center of the screen
-  int y = (SCREEN_HEIGHT - total_height) / 2;
+    // Calculate the vertical center of the screen
+    int y = (SCREEN_HEIGHT - total_height) / 2;
 
-  // Draw "Start" button
-  if (vg_draw_rectangle(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR) != 0) {
-    printf("Failed to draw Start button\n");
-  }
-  if (draw_string("Start", x + (BUTTON_WIDTH - (5 * 3 * 8)) / 2, y + (BUTTON_HEIGHT - (3 * 8)) / 2, TEXT_COLOR, 3) != 0) {
-    printf("Failed to draw Start text\n");
-  }
+    // Loop through the labels and draw each button
+    for (int i = 0; i < num_labels; i++) {
+        // Calculate the horizontal center of the screen for each button
+        int x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
 
-  // Draw "Settings" button
-  y += BUTTON_HEIGHT + BUTTON_SPACING;
-  if (vg_draw_rectangle(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR) != 0) {
-    printf("Failed to draw Settings button\n");
-  }
-  if (draw_string("Settings", x + (BUTTON_WIDTH - (8 * 3 * 8)) / 2, y + (BUTTON_HEIGHT - (3 * 8)) / 2, TEXT_COLOR, 3) != 0) {
-    printf("Failed to draw Settings text\n");
-  }
+        // Draw the button rectangle
+        if (vg_draw_rectangle(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR) != 0) {
+            printf("Failed to draw %s button\n", labels[i]);
+        }
 
-  // Draw "Exit" button
-  y += BUTTON_HEIGHT + BUTTON_SPACING;
-  if (vg_draw_rectangle(x, y, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR) != 0) {
-    printf("Failed to draw Exit button\n");
-  }
-  if (draw_string("Exit", x + (BUTTON_WIDTH - (4 * 3 * 8)) / 2, y + (BUTTON_HEIGHT - (3 * 8)) / 2, TEXT_COLOR, 3) != 0) {
-    printf("Failed to draw Exit text\n");
-  }
+        // Calculate label width and height based on text size (3x scale)
+        int label_width = strlen(labels[i]) * 8 * 3; // Each character is 8 pixels wide, scaled by 3
+        int label_height = 8 * 3;                   // Each character is 8 pixels tall, scaled by 3
+
+        // Center the label inside the button
+        int label_x = x + (BUTTON_WIDTH - label_width) / 2;
+        int label_y = y + (BUTTON_HEIGHT - label_height) / 2;
+
+        // Draw the button label
+        if (draw_string(labels[i], label_x, label_y, TEXT_COLOR, 3) != 0) {
+            printf("Failed to draw %s text\n", labels[i]);
+        }
+
+        // Move to the next button position
+        y += BUTTON_HEIGHT + BUTTON_SPACING;
+    }
 }
 
 
