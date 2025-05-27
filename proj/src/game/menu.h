@@ -1,7 +1,9 @@
 #ifndef _MENU_H_
 #define _MENU_H_
 
-#define BUTTON_WIDTH 200
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 1024
+#define BUTTON_WIDTH 300
 #define BUTTON_HEIGHT 50
 #define BUTTON_COLOR 0xFF99FF
 #define TEXT_COLOR 0xFFFFFF
