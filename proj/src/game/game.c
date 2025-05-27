@@ -21,16 +21,16 @@ void draw_guessword() {
 
 void gameCountdown(int remaining_time) {
   
-  int unit_number = timer_counter % 10; 
-  int tens_number = (timer_counter / 10) % 10;
+  int unit_number = remaining_time % 10; 
+  int tens_number = (remaining_time/ 10) % 10;
 
   if (tens_number > 0) {
     
-    draw_letter(unit_number, 40, 40, 0xFFF000, 3);
-    draw_letter(unit_number, 69, 69, 0xFFF000, 3);
+    draw_letter('0' + tens_number, 40, 40, 0xFFF000, 4);
+    draw_letter('0' + unit_number, 90, 40, 0xFFF000, 4);
   }
 
   else {
-    draw_letter(unit_number, 69, 69, 0xFFFFFF, 3);
+    draw_letter('0' + unit_number, 90, 40, 0xFFF000, 4);
   }
 }

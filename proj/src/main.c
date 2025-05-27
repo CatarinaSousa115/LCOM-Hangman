@@ -23,7 +23,7 @@ StateOptions state = MENU;
 
 
 bool gameRunning = true;
-int remaining_time = 30;
+int remaining_time = 15;
 
 int(main)(int argc, char *argv[]) {
   lcf_set_language("EN-US");
@@ -112,15 +112,17 @@ int game_loop() {
                 draw_options(selected_option);  
             }
 
-            if (timer_counter % 60 == 0 && state == PLAY) {
-              vg_draw_rectangle(40, 69, 100, 100, 0x000000); 
+            if (timer_counter % 30 == 0 && state == PLAY) {
+              vg_draw_rectangle(0, 0, SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, 0x000000); 
               gameCountdown(remaining_time); 
               remaining_time--;
             }
 
-            if (remaining_time == 23) {
-              vg_draw_rectangle(69, 69, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFF); 
+            if (remaining_time == 0) {
+              vg_draw_rectangle(0, 0, SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, 0x000000); 
               draw_string("Time's up!", 500, 400, TEXT_COLOR, 3);
+              state = MENU; 
+              remaining_time = 15; 
             } 
           }
           
