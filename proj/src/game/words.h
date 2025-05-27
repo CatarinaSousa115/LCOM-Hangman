@@ -1,7 +1,8 @@
 #ifndef WORDS_H
 #define WORDS_H
 
-void words_dummy(void);
+extern const char *guesswords[];
+extern const int guesswords_count;
 
 #endif
 

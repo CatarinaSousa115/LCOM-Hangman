@@ -1,18 +1,13 @@
 #include "game.h"
 #include "menu.h"
+#include "words.h"
 #include "../assets/font.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-const char *guesswords[] = {
-    "HANGMAN",
-    "COMPUTER",
-    "PROGRAMMING",
-    "KEYBOARD",
-    "MOUSE"
-};
 
-const int guesswords_count = sizeof(guesswords) / sizeof(guesswords[0]);
+
+
 
 void draw_guessword() {
   int x = 50;

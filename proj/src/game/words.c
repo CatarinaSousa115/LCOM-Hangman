@@ -2,7 +2,15 @@
 #include <lcom/lcf.h>
 
 
-void words_dummy(void) {}
+const char *guesswords[] = {
+    "HANGMAN",
+    "COMPUTER",
+    "PROGRAMMING",
+    "KEYBOARD",
+    "MOUSE"
+};
+
+const int guesswords_count = sizeof(guesswords) / sizeof(guesswords[0]);
 
 
 

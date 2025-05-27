@@ -9,20 +9,12 @@ extern bool gameRunning; // Variable to control the game loop
 #define BUTTON_WIDTH 300
 #define BUTTON_HEIGHT 50
 #define BUTTON_COLOR 0xFF99FF
-#define TEXT_COLOR 0xFFFFFF
+#define TEXT_COLOR 0xFF00FF
 #define BUTTON_SPACING 20
 #define HIGHLIGHT_COLOR 0x8A538A
 #define KEY_UP_ARROW 0x48
 #define KEY_DOWN_ARROW 0x50
 #define KEY_ENTER 0x1C
-
-
-typedef enum {
-  MENU,
-  MENU_PLAY,
-  MENU_INSTRUCTIONS,
-  MENU_EXIT
-} MenuOptions;
 
 void menu_init();
 void draw_options();
