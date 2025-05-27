@@ -76,11 +76,15 @@ int remove_devices() {
   return 0;
 }
 
-int process_interrupts() {
+int game_loop() {
   int ipc_status;
   message msg;
+  int selected_option = 0;
 
   while (gameRunning) {
+    // Draw the menu with the updated selection
+    draw_options(selected_option);
+
     if (driver_receive(ANY, &msg, &ipc_status) != 0) {
       printf("driver_receive failed\n");
       continue;
@@ -92,16 +96,13 @@ int process_interrupts() {
           // Timer interrupt
           if (msg.m_notify.interrupts & irq_timer) {
             timer_int_handler();
-            // Add timer-related logic here
           }
           // Keyboard interrupt
           if (msg.m_notify.interrupts & irq_kb) {
             keyboard_ih();
 
-            kbd_print_scancode(is_makecode(scancode), code_size(scancode), &scancode);
-            if (scancode == ESC_BREAKCODE) {
-              gameRunning = false; // Exit the game loop
-            }
+            // Pass the scancode to handle_menu_input
+            handle_menu_input(scancode, &selected_option);
           }
           // Mouse interrupt
           if (msg.m_notify.interrupts & irq_mouse) {
@@ -118,23 +119,18 @@ int process_interrupts() {
       }
     }
   }
-
   return 0;
 }
 
 int(proj_main_loop)(int argc, char *argv[]) {
-
   if (init_devices())
     return 1;
 
-  menu_init();
-  // Exit graphics mode
-  if (process_interrupts() != 0) {
+  if (game_loop() != 0) {
     printf("Error during interrupt processing.\n");
     return 1;
   }
 
   remove_devices();
-  //graphics_exit();
   return 0;
 }

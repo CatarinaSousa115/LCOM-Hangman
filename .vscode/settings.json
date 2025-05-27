@@ -8,6 +8,7 @@
         "queue": "c",
         "stack": "c",
         "sstream": "cpp",
-        "graphics.h": "c"
+        "graphics.h": "c",
+        "menu.h": "c"
     }
 }
