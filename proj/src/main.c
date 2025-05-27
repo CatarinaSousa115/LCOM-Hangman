@@ -10,6 +10,7 @@
 #include "peripherals/i8254.h"
 #include "peripherals/keyboard/keyboard.h"
 #include "peripherals/mouse/mouse.h"
+#include "game/game.h"
 #include <time.h>
 
 extern uint8_t scancode;
@@ -32,12 +33,12 @@ int(main)(int argc, char *argv[]) {
 
 int init_devices() {
 
-  if (map_video_memory(0x14C) != 0) {
+  if (map_video_memory(0x11A) != 0) {
     return 1;
   }
 
   // Initialize graphics mode
-  if (vg_init_graphic(0x14C) != 0) {
+  if (vg_init_graphic(0x11A) != 0) {
     printf("Failed to initialize graphics mode. Exiting...\n");
     return 1;
   }
@@ -84,7 +85,7 @@ int game_loop() {
 
   while (gameRunning) {
     // Draw the menu with the updated selection
-    draw_options(selected_option);
+    draw_options(selected_option);    
 
     if (driver_receive(ANY, &msg, &ipc_status) != 0) {
       printf("driver_receive failed\n");
