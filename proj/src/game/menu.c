@@ -1,4 +1,5 @@
 #include "menu.h"
+#include "game.h"
 #include "../assets/font.h"
 #include "../peripherals/graphics/graphics.h"
 #include "hangman.h"
@@ -8,12 +9,9 @@
 
 void menu_init() {
 
-  
- /* if (draw_hangman(100, 50,0) != 0) {
-  printf("Error drawing hangman.\n");}*/
 
   draw_options();
-
+  draw_guessword();
   return;
 }
 

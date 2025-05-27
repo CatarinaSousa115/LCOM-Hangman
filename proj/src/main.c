@@ -10,6 +10,7 @@
 #include "peripherals/i8254.h"
 #include "peripherals/keyboard/keyboard.h"
 #include "peripherals/mouse/mouse.h"
+#include <time.h>
 
 extern uint8_t scancode;
 extern uint8_t packet_byte_index;
@@ -124,6 +125,7 @@ int process_interrupts() {
 
 int(proj_main_loop)(int argc, char *argv[]) {
 
+  srand(time(NULL));
   if (init_devices())
     return 1;
 
