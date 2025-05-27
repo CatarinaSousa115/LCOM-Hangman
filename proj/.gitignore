@@ -16,6 +16,7 @@
 *.dll
 
 # Debug files
+*.gdbinit
 *.dSYM/
 *.stackdump
 
@@ -42,8 +43,8 @@
 *.code-workspace
 
 # LCF-generated files
-/home/lcom/labs/**/trace.txt
-/home/lcom/labs/**/output.txt
+trace.txt
+output.txt
 
 # Git-specific files
 *.orig
