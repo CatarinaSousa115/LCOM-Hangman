@@ -10,4 +10,6 @@ typedef enum {
 
 void draw_guessword();
 
+void gameCountdown(int remaining_time);
+
 #endif 

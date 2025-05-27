@@ -23,7 +23,7 @@ StateOptions state = MENU;
 
 
 bool gameRunning = true;
-uint8_t elapsed_time = 0;
+int remaining_time = 30;
 
 int(main)(int argc, char *argv[]) {
   lcf_set_language("EN-US");
@@ -93,8 +93,8 @@ int game_loop() {
 
   while (gameRunning) {
     // Draw the menu with the updated selection
-    draw_options(selected_option);   
-    draw_hangman(100, 100, 0); // Draw hangman at position (100, 100) with stage 0 
+    //draw_options(selected_option);   
+    //draw_hangman(100, 100, 0); // Draw hangman at position (100, 100) with stage 0 
 
     if (driver_receive(ANY, &msg, &ipc_status) != 0) {
       printf("driver_receive failed\n");
@@ -113,11 +113,13 @@ int game_loop() {
             }
 
             if (timer_counter % 60 == 0 && state == PLAY) {
-              elapsed_time++;
+              vg_draw_rectangle(40, 69, 100, 100, 0x000000); 
+              gameCountdown(remaining_time); 
+              remaining_time--;
             }
 
-            if (elapsed_time == 5) {
-              vg_draw_rectangle(69, 69, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000); 
+            if (remaining_time == 23) {
+              vg_draw_rectangle(69, 69, SCREEN_WIDTH, SCREEN_HEIGHT, 0xFFFFFF); 
               draw_string("Time's up!", 500, 400, TEXT_COLOR, 3);
             } 
           }
