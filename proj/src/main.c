@@ -13,11 +13,17 @@
 #include "game/game.h"
 #include <time.h>
 
+extern uint32_t timer_counter;
 extern uint8_t scancode;
 extern uint8_t packet_byte_index;
+
 uint8_t irq_kb, irq_mouse, irq_timer;
 
+StateOptions state = MENU;
+
+
 bool gameRunning = true;
+int remaining_time = 15;
 
 int(main)(int argc, char *argv[]) {
   lcf_set_language("EN-US");
@@ -42,6 +48,8 @@ int init_devices() {
     printf("Failed to initialize graphics mode. Exiting...\n");
     return 1;
   }
+
+  timer_set_frequency(0, 60);
 
   // Subscribe to interrupts
   if (timer_subscribe_int(&irq_timer))
@@ -85,8 +93,8 @@ int game_loop() {
 
   while (gameRunning) {
     // Draw the menu with the updated selection
-    draw_options(selected_option);   
-    draw_hangman(100, 100, 0); // Draw hangman at position (100, 100) with stage 0 
+    //draw_options(selected_option);   
+    //draw_hangman(100, 100, 0); // Draw hangman at position (100, 100) with stage 0 
 
     if (driver_receive(ANY, &msg, &ipc_status) != 0) {
       printf("driver_receive failed\n");
@@ -99,7 +107,25 @@ int game_loop() {
           // Timer interrupt
           if (msg.m_notify.interrupts & irq_timer) {
             timer_int_handler();
+
+            if (timer_counter % 60 == 0 && state == MENU) {
+                draw_options(selected_option);  
+            }
+
+            if (timer_counter % 30 == 0 && state == PLAY) {
+              vg_draw_rectangle(0, 0, SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, 0x000000); 
+              gameCountdown(remaining_time); 
+              remaining_time--;
+            }
+
+            if (remaining_time == 0) {
+              vg_draw_rectangle(0, 0, SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, 0x000000); 
+              draw_string("Time's up!", 500, 400, TEXT_COLOR, 3);
+              state = MENU; 
+              remaining_time = 15; 
+            } 
           }
+          
           // Keyboard interrupt
           if (msg.m_notify.interrupts & irq_kb) {
             keyboard_ih();
@@ -127,7 +153,6 @@ int game_loop() {
 
 int(proj_main_loop)(int argc, char *argv[]) {
 
-  srand(time(NULL));
   if (init_devices())
     return 1;
 

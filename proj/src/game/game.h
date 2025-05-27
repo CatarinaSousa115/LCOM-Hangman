@@ -1,9 +1,15 @@
 #ifndef GAME_H
 #define GAME_H
 
+typedef enum {
+  MENU,
+  PLAY,
+  INSTRUCTIONS
+} StateOptions;
+
+
 void draw_guessword();
 
-extern const char *guesswords[];
-extern const int guesswords_count;
+void gameCountdown(int remaining_time);
 
 #endif 

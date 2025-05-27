@@ -39,6 +39,7 @@
 
 # IDE-specific files
 .vscode/
+.vscode/settings.json
 .idea/
 *.code-workspace
 

@@ -8,6 +8,8 @@
 #include <lcom/lcf.h>
 #include <stdio.h>
 
+extern StateOptions state;
+
 void draw_options(int selected_option) {
   // Define the labels for the buttons
   const char *labels[] = {"Start", "Settings", "Exit"};
@@ -75,6 +77,7 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
       // Handle selection of the current option
       switch (*selected_option) {
         case 0:
+          state = PLAY;
           printf("Start game selected\n");
           // Start the game logic here
           break;

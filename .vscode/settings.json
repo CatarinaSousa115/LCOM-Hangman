@@ -9,6 +9,7 @@
         "stack": "c",
         "sstream": "cpp",
         "graphics.h": "c",
-        "menu.h": "c"
+        "menu.h": "c",
+        "stdint.h": "c"
     }
 }
