@@ -2,11 +2,10 @@
 #define HANGMAN_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
-void hangman_dummy(void);
+int draw_hangman(uint16_t x, uint16_t y, int stage);
 
 
 #endif 
-
-
 

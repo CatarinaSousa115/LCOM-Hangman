@@ -1,7 +1,7 @@
 // Initializes peripherals, starts the game loop.
 
 #include "assets/font.h"
-#include "assets/pixmap.h"
+#include "assets/game_pixmap.h"
 #include "game/hangman.h"
 #include "game/menu.h"
 #include "peripherals/graphics/VBE.h"

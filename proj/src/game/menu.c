@@ -1,8 +1,16 @@
 #include "menu.h"
 #include "../assets/font.h"
 #include "../peripherals/graphics/graphics.h"
+#include "hangman.h"
+#include "../assets/game_pixmap.h" 
+#include <lcom/lcf.h>
+#include <stdio.h>
 
 void menu_init() {
+
+  
+ /* if (draw_hangman(100, 50,0) != 0) {
+  printf("Error drawing hangman.\n");}*/
 
   draw_options();
 
@@ -45,3 +53,5 @@ void draw_options() {
     printf("Failed to draw Exit text\n");
   }
 }
+
+

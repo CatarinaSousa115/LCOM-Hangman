@@ -1,12 +1,51 @@
 #include "hangman.h"
-#include "../assets/pixmap.h"
+#include "../assets/game_pixmap.h"
 #include "../peripherals/graphics/graphics.h"
-#include "ui.h"
-#include <stdio.h>
-#include <string.h>
 #include <lcom/lcf.h>
+#include <stdio.h>
+#include <stdint.h>
+extern uint16_t h_res;
+extern uint16_t v_res;  
 
 
-void hangman_dummy(void) {}
+int draw_hangman(uint16_t x, uint16_t y, int stage) {
+    xpm_image_t img;
+    uint8_t *pixmap;
 
+    // Select the appropriate pixmap based on the stage
+    xpm_row_t const *selected_pixmap;
+    switch (stage) {
+        case 0: selected_pixmap = man_0; break;
+        case 1: selected_pixmap = man_1; break;
+        case 2: selected_pixmap = man_2; break;
+        case 3: selected_pixmap = man_3; break;
+        case 4: selected_pixmap = man_4; break;
+        case 5: selected_pixmap = man_5; break;
+        case 6: selected_pixmap = final_man; break;
+        default:
+            printf("Invalid hangman stage: %d\n", stage);
+            return 1;
+    }
+
+    // Load the selected pixmap
+    pixmap = xpm_load(selected_pixmap, XPM_INDEXED, &img);
+    if (pixmap == NULL) {
+        printf("Failed to load hangman pixmap for stage %d.\n", stage);
+        return 1;
+    }
+
+    // Check if the pixmap exceeds screen bounds
+    if (x + img.width > h_res || y + img.height > v_res) {
+        printf("Pixmap exceeds screen bounds.\n");
+        return 1;
+    }
+
+    // Draw the pixmap at the specified coordinates
+    if (draw_xpm(pixmap, &img, x, y) != 0) {
+        printf("Failed to draw hangman pixmap for stage %d.\n", stage);
+        return 1;
+    }
+
+    return 0;
+}
 
