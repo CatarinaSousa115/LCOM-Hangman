@@ -43,10 +43,10 @@ int draw_hangman(uint16_t x, uint16_t y, int stage) {
   for (int row = 0; row < img.height; row++) {
     for (int col = 0; col < img.width; col++) {
       uint32_t color = pixmap[row * img.width + col];
-      for (int dy = 0; dy < 8; dy++) {
-        for (int dx = 0; dx < 8; dx++) {
-          if (vg_draw_pixel(x + col * 8 + dx, y + row * 8 + dy, color) != 0) {
-            printf("Failed to draw scaled pixel at (%d, %d).\n", x + col * 8 + dx, y + row * 8 + dy);
+      for (int dy = 0; dy < 1; dy++) {
+        for (int dx = 0; dx < 1; dx++) {
+          if (vg_draw_pixel(x + col * 1 + dx, y + row * 1 + dy, color) != 0) {
+            printf("Failed to draw scaled pixel at (%d, %d).\n", x + col * 1 + dx, y + row * 1 + dy);
             return 1;
           }
         }
