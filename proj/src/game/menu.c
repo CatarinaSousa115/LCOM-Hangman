@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "game.h"
+#include "game_state.h"
 #include "../assets/font.h"
 #include "../assets/game_pixmap.h"
 #include "../peripherals/graphics/graphics.h"

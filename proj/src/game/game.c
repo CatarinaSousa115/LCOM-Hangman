@@ -2,6 +2,7 @@
 #include "menu.h"
 #include "words.h"
 #include "../assets/font.h"
+#include "../peripherals/graphics/graphics.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -33,4 +34,16 @@ void gameCountdown(int remaining_time) {
   else {
     draw_letter('0' + unit_number, 90, 40, 0xFFF000, 4);
   }
+}
+
+
+void draw_game_over_screen() {
+
+  vg_draw_rectangle(0, 0, SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, 0x000000); 
+  draw_string("Time's up!", 500, 400, TEXT_COLOR, 3);
+}
+
+
+void handle_game_input(uint8_t scancode) {
+  //need to implement
 }
