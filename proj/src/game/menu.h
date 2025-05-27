@@ -4,8 +4,8 @@
 #include <stdbool.h>
 extern bool gameRunning; // Variable to control the game loop
 
-#define SCREEN_WIDTH 1152
-#define SCREEN_HEIGHT 864
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 1024
 #define BUTTON_WIDTH 300
 #define BUTTON_HEIGHT 50
 #define BUTTON_COLOR 0xFF99FF

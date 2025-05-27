@@ -85,7 +85,8 @@ int game_loop() {
 
   while (gameRunning) {
     // Draw the menu with the updated selection
-    draw_options(selected_option);    
+    draw_options(selected_option);   
+    draw_hangman(100, 100, 0); // Draw hangman at position (100, 100) with stage 0 
 
     if (driver_receive(ANY, &msg, &ipc_status) != 0) {
       printf("driver_receive failed\n");
