@@ -1,11 +1,13 @@
 #include "instructions.h"
 #include "menu.h"
 #include "game.h"
+#include "game_state.h"
 #include "../assets/font.h"
 #include "../assets/game_pixmap.h"
 #include "../peripherals/graphics/graphics.h"
 #include "../peripherals/keyboard/keyboard.h"
 #include "hangman.h"
+#include "words.h"
 #include <lcom/lcf.h>
 #include <stdio.h>
 
@@ -80,7 +82,6 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
         case 0:
           state = PLAY;
           printf("Start game selected\n");
-          // Start the game logic here
           break;
         case 1:
           state = INSTRUCTIONS;

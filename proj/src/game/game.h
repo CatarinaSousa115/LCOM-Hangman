@@ -1,15 +1,12 @@
 #ifndef GAME_H
 #define GAME_H
 
-typedef enum {
-  MENU,
-  PLAY,
-  INSTRUCTIONS
-} StateOptions;
-
-
-void draw_guessword();
+#include <lcom/lcf.h>
 
 void gameCountdown(int remaining_time);
+
+void draw_game_over_screen();
+
+void handle_game_input(uint8_t scancode);
 
 #endif 

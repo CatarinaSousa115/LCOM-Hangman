@@ -2,6 +2,7 @@
 #define _MENU_H_
 #include <stdint.h>
 #include <stdbool.h>
+#include "../peripherals/i8042.h"
 extern bool gameRunning; // Variable to control the game loop
 
 #define SCREEN_WIDTH 1280
@@ -12,9 +13,7 @@ extern bool gameRunning; // Variable to control the game loop
 #define TEXT_COLOR 0xFF00FF
 #define BUTTON_SPACING 20
 #define HIGHLIGHT_COLOR 0x8A538A
-#define KEY_UP_ARROW 0x48
-#define KEY_DOWN_ARROW 0x50
-#define KEY_ENTER 0x1C
+
 
 void menu_init();
 void draw_options();

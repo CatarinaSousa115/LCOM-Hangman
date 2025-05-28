@@ -3,6 +3,7 @@
 #include "assets/font.h"
 #include "assets/game_pixmap.h"
 #include "game/hangman.h"
+#include "game/game_state.h"
 #include "game/menu.h"
 #include "peripherals/graphics/VBE.h"
 #include "peripherals/graphics/graphics.h"
@@ -16,14 +17,15 @@
 extern uint32_t timer_counter;
 extern uint8_t scancode;
 extern uint8_t packet_byte_index;
+extern int remaining_time;
+extern int selected_option;
+extern bool redraw_needed;
+
 
 uint8_t irq_kb, irq_mouse, irq_timer;
-
+bool gameRunning = true;
 StateOptions state = MENU;
 
-
-bool gameRunning = true;
-int remaining_time = 15;
 
 int(main)(int argc, char *argv[]) {
   lcf_set_language("EN-US");
@@ -89,7 +91,6 @@ int remove_devices() {
 int game_loop() {
   int ipc_status;
   message msg;
-  int selected_option = 0;
 
   while (gameRunning) {
     // Draw the menu with the updated selection
@@ -108,31 +109,39 @@ int game_loop() {
           if (msg.m_notify.interrupts & irq_timer) {
             timer_int_handler();
 
-            if (timer_counter % 60 == 0 && state == MENU) {
-                draw_options(selected_option);  
-            }
+            if (timer_counter % 60 == 0) {
+              redraw_needed = true; 
+            } 
 
-            if (timer_counter % 30 == 0 && state == PLAY) {
-              vg_draw_rectangle(0, 0, SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, 0x000000); 
-              gameCountdown(remaining_time); 
+            //if we are playing decrease the remaining time
+            if ((timer_counter % 30 == 0) && (state == PLAY)) {
+              redraw_needed = true; 
               remaining_time--;
             }
-
-            if (remaining_time == 0) {
-              vg_draw_rectangle(0, 0, SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, 0x000000); 
-              draw_string("Time's up!", 500, 400, TEXT_COLOR, 3);
-              state = MENU; 
-              remaining_time = 15; 
-            } 
           }
           
           // Keyboard interrupt
           if (msg.m_notify.interrupts & irq_kb) {
             keyboard_ih();
 
-            // Pass the scancode to handle_menu_input
-            handle_menu_input(scancode, &selected_option);
+            if (state == MENU) {
+              // Pass the scancode to handle_menu_input
+              handle_menu_input(scancode, &selected_option);
+              redraw_needed = true;
+            }
+
+            else if (scancode == ESC_BREAKCODE && state == PLAY) {
+              state = EXIT;
+              redraw_needed = true;
+            }
+
+            /*else if (state == PLAY) {
+              handle_game_input(scancode);
+              redraw_needed = true;
+            } */
+            
           }
+
           // Mouse interrupt
           if (msg.m_notify.interrupts & irq_mouse) {
             mouse_ih();
@@ -147,9 +156,14 @@ int game_loop() {
           break;
       }
     }
+
+    if (redraw_needed) {
+      handle_game_state();
+    }
   }
   return 0;
 }
+
 
 int(proj_main_loop)(int argc, char *argv[]) {
 
@@ -158,6 +172,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
 
   if (game_loop() != 0) {
     printf("Error during interrupt processing.\n");
+    remove_devices();
     return 1;
   }
 
