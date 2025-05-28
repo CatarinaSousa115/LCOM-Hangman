@@ -29,8 +29,7 @@ void handle_game_state() {
                is_setup = false;
             }
 
-            vg_draw_rectangle(0, 0, SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, 0x000000);
-
+        
             //draw_hangman(current_stage);
 
             //To implement
