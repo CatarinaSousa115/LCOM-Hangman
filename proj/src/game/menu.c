@@ -1,3 +1,4 @@
+#include "instructions.h"
 #include "menu.h"
 #include "game.h"
 #include "../assets/font.h"
@@ -12,7 +13,7 @@ extern StateOptions state;
 
 void draw_options(int selected_option) {
   // Define the labels for the buttons
-  const char *labels[] = {"Start", "Settings", "Exit"};
+  const char *labels[] = {"Start", "Instructions", "Exit"};
   const int num_labels = 3;
 
   // Calculate the total height of all buttons and spacings
@@ -82,8 +83,10 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
           // Start the game logic here
           break;
         case 1:
-          printf("Settings selected\n");
-          // Open settings logic here
+          state = INSTRUCTIONS;
+          draw_instructions_screen();
+          printf("Instructions selected\n");
+          // Open instructions here
           break;
         case 2:
           gameRunning = false; // Exit the game

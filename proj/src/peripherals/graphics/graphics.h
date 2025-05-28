@@ -45,5 +45,7 @@ int calculate_move_amount(int speed, int target_pos, int current_pos);
 
 void graphics_exit(void);
 
+void clear_screen();
+
 #endif
 

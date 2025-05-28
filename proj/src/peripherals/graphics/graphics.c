@@ -1,5 +1,6 @@
 #include <lcom/lcf.h>
 #include "graphics.h"
+#include "../../game/menu.h"
 #include "../keyboard/keyboard.h"
 
 extern uint8_t scancode;
@@ -291,5 +292,6 @@ void graphics_exit(void) {
   }    // Call BIOS interrupt to set video mode
 }
 
-
-
+void clear_screen() {
+  vg_draw_rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000);
+}
