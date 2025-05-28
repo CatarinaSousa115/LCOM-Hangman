@@ -13,6 +13,7 @@ extern char *mouse_pointer_xpm[];
 extern uint16_t h_res;
 extern uint16_t v_res;
 static int mouse_x = 150, mouse_y = 150; // Initial mouse position
+static uint32_t saved_background[32][32]; // Buffer to save the background under the mouse pointer
 
 int(mouse_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL) {
@@ -46,14 +47,19 @@ void(mouse_ih)() {
 
 void(buffer_mouse_bytes)() {
   if ((curr_mouse_byte & BIT(3)) && packet_byte_index == 0) {
-    mouse_bytes[packet_byte_index] = curr_mouse_byte;
-    packet_byte_index++;
+    mouse_bytes[packet_byte_index++] = curr_mouse_byte;
   }
-  else if (packet_byte_index > 0) {
-    mouse_bytes[packet_byte_index] = curr_mouse_byte;
-    packet_byte_index++;
+  else if (packet_byte_index > 0 && packet_byte_index < 3) {
+    mouse_bytes[packet_byte_index++] = curr_mouse_byte;
+  }
+
+  if (packet_byte_index == 3) {
+    process_mouse_bytes();     
+    update_mouse_position();    
+    packet_byte_index = 0;     
   }
 }
+
 
 void process_mouse_bytes() {
   // Existing logic to process mouse bytes
@@ -76,7 +82,7 @@ void process_mouse_bytes() {
   if (mouse_bytes[0] & MOUSE_Y_SIGN) {
     delta_y |= 0xFF00; // Sign extend if the sign bit is set
   }
-  mouse_packet.delta_y = -delta_y;
+  mouse_packet.delta_y = delta_y;
 }
 
 int(mouse_write_cmd)(uint8_t cmd) {
@@ -115,9 +121,67 @@ int init_mouse_pointer() {
     printf("Pixmap exceeds screen bounds.\n");
     return 1;
   }
-  if (draw_xpm(mouse_pixmap,&mouse_img,mouse_x, mouse_y) != 0) {
-    printf("Failed to draw initial mouse pointer\n");
-    return 1;
-  }
+  draw_mouse_pointer(); 
   return 0;
 }
+
+void draw_mouse_pointer() {
+  // Draw the mouse pointer at the current position
+  for (int row = 0; row < mouse_img.height; row++) {
+    for (int col = 0; col < mouse_img.width; col++) {
+      uint32_t color = mouse_img.bytes[row * mouse_img.width + col];
+      if (color != 0x0000) { // Skip transparent pixels
+        vg_draw_pixel(mouse_x + col, mouse_y + row, color);
+      }
+    }
+  }
+}
+
+void save_background(int x, int y) {
+  for (int row = 0; row < mouse_img.height; row++) {
+    for (int col = 0; col < mouse_img.width; col++) {
+      saved_background[row][col] = vg_get_pixel(x + col, y + row); // Save the pixel color
+    }
+  }
+}
+
+void restore_background(int x, int y) {
+  for (int row = 0; row < mouse_img.height; row++) {
+    for (int col = 0; col < mouse_img.width; col++) {
+      vg_draw_pixel(x + col, y + row, saved_background[row][col]); // Restore the pixel color
+    }
+  }
+}
+
+void update_mouse_position() {
+  // Restore the background at the previous mouse position
+  restore_background(mouse_x, mouse_y);
+
+  // Update horizontal position
+  if (mouse_x + mouse_packet.delta_x < 0 && !mouse_packet.x_ov) {
+    mouse_x = 0;
+  }
+  else if (mouse_x + mouse_packet.delta_x > SCREEN_WIDTH - mouse_img.width && !mouse_packet.x_ov) {
+    mouse_x = SCREEN_WIDTH - mouse_img.width;
+  }
+  else if (!mouse_packet.x_ov) {
+    mouse_x += mouse_packet.delta_x;
+  }
+
+  // Update vertical position
+  if (mouse_y - mouse_packet.delta_y < 0 && !mouse_packet.y_ov) {
+    mouse_y = 0;
+  }
+  else if (mouse_y - mouse_packet.delta_y > SCREEN_HEIGHT - mouse_img.height && !mouse_packet.y_ov) {
+    mouse_y = SCREEN_HEIGHT - mouse_img.height;
+  }
+  else if (!mouse_packet.y_ov) {
+    mouse_y -= mouse_packet.delta_y; // Invert delta_y for correct vertical movement
+  }
+
+  // Save the background at the new mouse position
+  save_background(mouse_x, mouse_y);
+
+  draw_mouse_pointer(); 
+}
+

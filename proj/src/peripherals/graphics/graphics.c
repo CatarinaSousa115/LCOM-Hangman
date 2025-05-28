@@ -295,3 +295,14 @@ void graphics_exit(void) {
 void clear_screen() {
   vg_draw_rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000);
 }
+
+uint32_t vg_get_pixel(uint16_t x, uint16_t y) {
+  if (x >= h_res || y >= v_res) return 0;
+
+  uint32_t index = (h_res * y + x) * bytes_per_pixel;
+
+  uint32_t color;
+  memcpy(&color, &video_mem[index], bytes_per_pixel);
+
+  return color;
+}
