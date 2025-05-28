@@ -1,9 +1,17 @@
 #include "game_state.h"
+#include "../game/menu.h"
+#include "../game/hangman.h"
+#include "../game/game.h"
+#include "../peripherals/graphics/graphics.h"
+#include "../game/words.h"
+#include "../assets/font.h"
+#include "../assets/game_pixmap.h"
 
 int current_stage = 0;
 int remaining_time = 15;
 int selected_option = 0;
 bool redraw_needed = true;
+bool is_setup = true;
 
 
 void handle_game_state() {
@@ -13,8 +21,14 @@ void handle_game_state() {
             break;
             
         case PLAY:
-            vg_draw_rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000);
-            
+            if(is_setup) {
+               vg_draw_rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000);
+               generate_guessword();
+               is_setup = false;
+            }
+
+            vg_draw_rectangle(0, 0, SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, 0x000000);
+
             //draw_hangman(current_stage);
 
             //To implement
@@ -38,12 +52,14 @@ void handle_game_state() {
         case EXIT:
             draw_game_over_screen();
 
-            //return to the menu after some time
-            if (timer_counter % 60 == 0) {
-                state = MENU;
+            if(timer_counter % 60 == 0){
                 reset_game_state();
+                is_setup = true;
+                redraw_needed = true;
+            
             }
             break;
+
     }
     redraw_needed = false;
 }

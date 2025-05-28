@@ -2,13 +2,6 @@
 #define GAME_STATE_H
 
 #include <lcom/lcf.h>
-#include "../game/menu.h"
-#include "../game/hangman.h"
-#include "../game/game.h"
-#include "../peripherals/graphics/graphics.h"
-#include "../game/words.h"
-#include "../assets/font.h"
-#include "../assets/game_pixmap.h"
 
 typedef enum {
   MENU,

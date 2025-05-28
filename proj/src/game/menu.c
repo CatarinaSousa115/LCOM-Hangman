@@ -6,6 +6,7 @@
 #include "../peripherals/graphics/graphics.h"
 #include "../peripherals/keyboard/keyboard.h"
 #include "hangman.h"
+#include "words.h"
 #include <lcom/lcf.h>
 #include <stdio.h>
 
@@ -80,7 +81,6 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
         case 0:
           state = PLAY;
           printf("Start game selected\n");
-          // Start the game logic here
           break;
         case 1:
           printf("Settings selected\n");

@@ -111,7 +111,7 @@ int game_loop() {
 
             if (timer_counter % 60 == 0) {
               redraw_needed = true; 
-            }
+            } 
 
             //if we are playing decrease the remaining time
             if ((timer_counter % 30 == 0) && (state == PLAY)) {
@@ -130,15 +130,16 @@ int game_loop() {
               redraw_needed = true;
             }
 
-            else if (state == PLAY) {
-              handle_game_input(scancode);
-            }
-                        
-            // ESC para voltar ao menu
-            if (scancode == ESC_BREAKCODE) {
-              state = MENU;
+            else if (scancode == ESC_BREAKCODE && state == PLAY) {
+              state = EXIT;
               redraw_needed = true;
             }
+
+            /*else if (state == PLAY) {
+              handle_game_input(scancode);
+              redraw_needed = true;
+            } */
+            
           }
 
           // Mouse interrupt
@@ -171,6 +172,7 @@ int(proj_main_loop)(int argc, char *argv[]) {
 
   if (game_loop() != 0) {
     printf("Error during interrupt processing.\n");
+    remove_devices();
     return 1;
   }
 
