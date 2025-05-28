@@ -4,8 +4,8 @@
 #include <lcom/lcf.h>
 #include "VBE.h"
 
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 1024
+#define SCREEN_WIDTH 1024
+#define SCREEN_HEIGHT 768
 
 
 typedef struct {
