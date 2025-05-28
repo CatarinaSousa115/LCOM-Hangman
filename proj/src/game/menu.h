@@ -5,14 +5,14 @@
 #include "../peripherals/i8042.h"
 extern bool gameRunning; // Variable to control the game loop
 
-#define SCREEN_WIDTH 1280
-#define SCREEN_HEIGHT 1024
+#define SCREEN_WIDTH 1024
+#define SCREEN_HEIGHT 768
 #define BUTTON_WIDTH 300
 #define BUTTON_HEIGHT 50
-#define BUTTON_COLOR 0xFF99FF
-#define TEXT_COLOR 0xFF00FF
+#define BUTTON_COLOR 15
+#define TEXT_COLOR 29
+#define HIGHLIGHT_COLOR 47
 #define BUTTON_SPACING 20
-#define HIGHLIGHT_COLOR 0x8A538A
 
 
 void menu_init();

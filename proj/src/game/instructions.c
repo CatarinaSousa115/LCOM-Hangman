@@ -9,7 +9,6 @@
 #include <lcom/lcf.h>
 #include <stdio.h>
 
-extern StateOptions state;
 
 void draw_instructions_screen(void) {
 
@@ -48,11 +47,11 @@ void draw_instructions_screen(void) {
   int y = (SCREEN_HEIGHT - ((num_lines - 1) * line_spacing)) / 2;
 
   // Draw 'Instructions'
-  draw_string("Instructions", ix, iy, BLUE_COLOR, 4);
+  draw_string("Instructions", ix, iy, TITLE_COLOR, 4);
 
   // Draw the instructions
   for (int i = 0; i < num_lines; i++) {
-    draw_string(instructions[i], x, y + i * line_spacing, PINK_COLOR, 2);
+    draw_string(instructions[i], x, y + i * line_spacing, TEXT_COLOR, 2);
   }
 
   // Draw the button rectangle
@@ -61,9 +60,6 @@ void draw_instructions_screen(void) {
   // Draw the 'Back' button
   draw_string(back_label, label_x, label_y, TEXT_COLOR, 2);
 
-  if (scancode == KEY_ENTER) {
-      state = MENU;
-  }
 
   return;
 }

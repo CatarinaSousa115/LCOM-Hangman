@@ -41,12 +41,12 @@ int(main)(int argc, char *argv[]) {
 
 int init_devices() {
 
-  if (map_video_memory(0x11A) != 0) {
+  if (map_video_memory(0x105) != 0) {
     return 1;
   }
 
   // Initialize graphics mode
-  if (vg_init_graphic(0x11A) != 0) {
+  if (vg_init_graphic(0x105) != 0) {
     printf("Failed to initialize graphics mode. Exiting...\n");
     return 1;
   }
