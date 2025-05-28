@@ -10,6 +10,7 @@ void (mouse_ih)();
 void (buffer_mouse_bytes)();
 void (process_mouse_bytes)();
 int(mouse_write_cmd)(uint8_t cmd);
+int init_mouse_pointer();
 
 
 

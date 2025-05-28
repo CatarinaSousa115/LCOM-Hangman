@@ -175,6 +175,10 @@ int(proj_main_loop)(int argc, char *argv[]) {
   if (init_devices())
     return 1;
 
+  if(init_mouse_pointer() != 0){
+    return 1;
+  }
+
   if (game_loop() != 0) {
     printf("Error during interrupt processing.\n");
     remove_devices();
