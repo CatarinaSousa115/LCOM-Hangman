@@ -130,7 +130,7 @@ int game_loop() {
               redraw_needed = true;
             }
 
-            else if (scancode == ESC_BREAKCODE && state == PLAY) {
+            if (scancode == ESC_BREAKCODE && state == PLAY) {
               state = EXIT;
               redraw_needed = true;
             }
@@ -140,6 +140,11 @@ int game_loop() {
               redraw_needed = true;
             } */
             
+            if (scancode == ESC_BREAKCODE && state == INSTRUCTIONS) {
+              state = EXIT;
+              redraw_needed = true;
+            }
+
           }
 
           // Mouse interrupt
@@ -169,6 +174,10 @@ int(proj_main_loop)(int argc, char *argv[]) {
 
   if (init_devices())
     return 1;
+
+  if(init_mouse_pointer() != 0){
+    return 1;
+  }
 
   if (game_loop() != 0) {
     printf("Error during interrupt processing.\n");
