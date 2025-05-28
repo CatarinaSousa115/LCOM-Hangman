@@ -50,6 +50,10 @@ void handle_game_state() {
 
 
 void reset_game_state() {
+
+    //clear the screen
+    vg_draw_rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000);
+
     state = MENU;
     remaining_time = 15; //we can create a new var
     current_stage = 0;
