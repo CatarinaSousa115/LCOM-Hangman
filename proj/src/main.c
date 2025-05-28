@@ -130,7 +130,7 @@ int game_loop() {
               redraw_needed = true;
             }
 
-            else if (scancode == ESC_BREAKCODE && state == PLAY) {
+            if (scancode == ESC_BREAKCODE && state == PLAY) {
               state = EXIT;
               redraw_needed = true;
             }
@@ -140,6 +140,11 @@ int game_loop() {
               redraw_needed = true;
             } */
             
+            if (scancode == ESC_BREAKCODE && state == INSTRUCTIONS) {
+              state = EXIT;
+              redraw_needed = true;
+            }
+
           }
 
           // Mouse interrupt

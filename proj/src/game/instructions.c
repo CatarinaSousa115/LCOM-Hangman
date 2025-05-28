@@ -4,6 +4,7 @@
 #include "../peripherals/graphics/graphics.h"
 #include "../peripherals/keyboard/keyboard.h"
 #include "game.h"
+#include "game_state.h"
 #include "hangman.h"
 #include "menu.h"
 #include <lcom/lcf.h>
@@ -12,8 +13,6 @@
 extern StateOptions state;
 
 void draw_instructions_screen(void) {
-
-  clear_screen();
 
   const char *instructions[] = {"Welcome to Hangman!\n\n",
                                 "Rules:\n",
@@ -60,10 +59,6 @@ void draw_instructions_screen(void) {
 
   // Draw the 'Back' button
   draw_string(back_label, label_x, label_y, TEXT_COLOR, 2);
-
-  if (scancode == KEY_ENTER) {
-      state = MENU;
-  }
 
   return;
 }

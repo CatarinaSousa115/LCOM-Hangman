@@ -1,4 +1,5 @@
 #include "game_state.h"
+#include "instructions.h"
 #include "../game/menu.h"
 #include "../game/hangman.h"
 #include "../game/game.h"
@@ -6,6 +7,7 @@
 #include "../game/words.h"
 #include "../assets/font.h"
 #include "../assets/game_pixmap.h"
+
 
 int current_stage = 0;
 int remaining_time = 15;
@@ -47,6 +49,7 @@ void handle_game_state() {
             break;
 
         case INSTRUCTIONS:
+                draw_instructions_screen();
             break;
             
         case EXIT:

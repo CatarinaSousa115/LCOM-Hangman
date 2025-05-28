@@ -85,7 +85,7 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
           break;
         case 1:
           state = INSTRUCTIONS;
-          draw_instructions_screen();
+          clear_screen();
           printf("Instructions selected\n");
           // Open instructions here
           break;
