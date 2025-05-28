@@ -4,6 +4,10 @@
 #include <lcom/lcf.h>
 #include "VBE.h"
 
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 1024
+
+
 typedef struct {
     uint16_t width; //largura do retângulo
     uint16_t height; // altura do retângulo
@@ -46,6 +50,10 @@ int calculate_move_amount(int speed, int target_pos, int current_pos);
 void graphics_exit(void);
 
 void clear_screen();
+
+uint32_t vg_get_pixel(uint16_t x, uint16_t y);
+
+
 
 #endif
 

@@ -11,8 +11,10 @@ void (buffer_mouse_bytes)();
 void (process_mouse_bytes)();
 int(mouse_write_cmd)(uint8_t cmd);
 int init_mouse_pointer();
-
-
+void save_background(int x, int y);
+void restore_background(int x, int y);
+void update_mouse_position();
+void draw_mouse_pointer();
 
 #endif
 
