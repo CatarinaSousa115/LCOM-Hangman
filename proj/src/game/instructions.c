@@ -17,7 +17,8 @@ void draw_instructions_screen(void) {
                                 "Rules:\n",
                                 "- Guess the hidden word one letter at a time.\n",
                                 "- Each incorrect guess draws a part of the hangman.\n",
-                                "- You win if you guess the word before the hangman is complete.\n",
+                                "- You win if you guess the word before the hangman is \n",
+                                "  complete.\n",
                                 "- Use the arrow keys to navigate.\n",
                                 "- Press ENTER to select.\n",
                                 "Good luck!"};

@@ -51,7 +51,9 @@ void handle_game_state() {
             break;
             
         case EXIT:
-            draw_game_over_screen();
+            if (state == PLAY){
+                draw_game_over_screen();
+            }
 
             if(timer_counter % 60 == 0){
                 reset_game_state();
