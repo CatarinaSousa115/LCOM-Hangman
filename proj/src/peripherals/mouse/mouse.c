@@ -12,7 +12,8 @@ uint8_t *mouse_pixmap;
 extern char *mouse_pointer_xpm[];
 extern uint16_t h_res;
 extern uint16_t v_res;
-static int mouse_x = 150, mouse_y = 150; // Initial mouse position
+int mouse_x = 150;                        // Initial mouse position X
+int mouse_y = 150;                        // Initial mouse position Y
 static uint32_t saved_background[32][32]; // Buffer to save the background under the mouse pointer
 
 int(mouse_subscribe_int)(uint8_t *bit_no) {
@@ -37,11 +38,17 @@ void(mouse_ih)() {
     return;
   }
 
+  printf("Status register: 0x%x\n", status);
+
   if ((status & OUT_BUF_FULL) && (status & AUX)) {
     if (read_controller(OUT_BUF, &curr_mouse_byte, 1) != 0) {
       printf("Error reading current mouse byte\n");
       return;
     }
+    printf("Mouse byte received: 0x%x\n", curr_mouse_byte);
+  }
+  else {
+    printf("Interrupt triggered without valid mouse data\n");
   }
 }
 
@@ -54,12 +61,12 @@ void(buffer_mouse_bytes)() {
   }
 
   if (packet_byte_index == 3) {
-    process_mouse_bytes();     
-    update_mouse_position();    
-    packet_byte_index = 0;     
+    process_mouse_bytes();
+    update_mouse_position();
+    process_mouse_clicks();
+    packet_byte_index = 0;
   }
 }
-
 
 void process_mouse_bytes() {
   // Existing logic to process mouse bytes
@@ -121,7 +128,7 @@ int init_mouse_pointer() {
     printf("Pixmap exceeds screen bounds.\n");
     return 1;
   }
-  draw_mouse_pointer(); 
+  draw_mouse_pointer();
   return 0;
 }
 
@@ -182,6 +189,17 @@ void update_mouse_position() {
   // Save the background at the new mouse position
   save_background(mouse_x, mouse_y);
 
-  draw_mouse_pointer(); 
+  draw_mouse_pointer();
 }
 
+void process_mouse_clicks() {
+  if (mouse_packet.lb) {
+    printf("Left button clicked at (%d, %d)\n", mouse_x, mouse_y);
+  }
+  if (mouse_packet.rb) {
+    printf("Right button clicked at (%d, %d)\n", mouse_x, mouse_y);
+  }
+  if (mouse_packet.mb) {
+    printf("Middle button clicked at (%d, %d)\n", mouse_x, mouse_y);
+  }
+}

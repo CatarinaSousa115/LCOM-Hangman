@@ -1,10 +1,10 @@
 #ifndef _MENU_H_
 #define _MENU_H_
-#include <stdint.h>
-#include <stdbool.h>
 #include "../peripherals/i8042.h"
-extern bool gameRunning; // Variable to control the game loop
+#include <stdbool.h>
+#include <stdint.h>
 
+extern bool gameRunning; // Variable to control the game loop
 
 #define BUTTON_WIDTH 300
 #define BUTTON_HEIGHT 50
@@ -13,10 +13,8 @@ extern bool gameRunning; // Variable to control the game loop
 #define HIGHLIGHT_COLOR 47
 #define BUTTON_SPACING 20
 
-
-void menu_init();
 void draw_options();
 void handle_menu_input(uint8_t scancode, int *selected_option);
+void handle_menu_click(int x, int y, int *selected_option);
 
 #endif
-

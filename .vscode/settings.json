@@ -1,7 +1,8 @@
 {
     "cSpell.words": [
         "irqrmpolicy",
-        "irqsetpolicy"
+        "irqsetpolicy",
+        "lcom"
     ],
     "files.associations": {
         "*.embeddedhtml": "html",

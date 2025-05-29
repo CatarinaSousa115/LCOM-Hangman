@@ -1,12 +1,13 @@
-#include "instructions.h"
 #include "menu.h"
-#include "game.h"
-#include "game_state.h"
 #include "../assets/font.h"
 #include "../assets/game_pixmap.h"
 #include "../peripherals/graphics/graphics.h"
 #include "../peripherals/keyboard/keyboard.h"
+#include "../peripherals/mouse/mouse.h"
+#include "game.h"
+#include "game_state.h"
 #include "hangman.h"
+#include "instructions.h"
 #include "words.h"
 #include <lcom/lcf.h>
 #include <stdio.h>
@@ -80,13 +81,13 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
       // Handle selection of the current option
       switch (*selected_option) {
         case 0:
-          state = PLAY;
           printf("Start game selected\n");
+          state = PLAY;
           break;
         case 1:
+          printf("Instructions selected\n");
           state = INSTRUCTIONS;
           clear_screen();
-          printf("Instructions selected\n");
           // Open instructions here
           break;
         case 2:
@@ -99,4 +100,31 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
       // Handle other keys if necessary
       break;
   }
+}
+
+void handle_menu_click(int x, int y, int *selected_option) {
+  // Calculate the starting position of the first button
+  int button_y = (SCREEN_HEIGHT - ((3 * BUTTON_HEIGHT) + (2 * BUTTON_SPACING))) / 2; // Center vertically
+
+  for (int i = 0; i < 3; i++) {
+    int button_x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2; // Center horizontally
+
+    // Debug: Print button bounds
+    printf("Button %d bounds: x=[%d, %d], y=[%d, %d]\n", i, button_x, button_x + BUTTON_WIDTH, button_y, button_y + BUTTON_HEIGHT);
+
+    // Check if the click is within the bounds of the button
+    if (x >= button_x && x <= button_x + BUTTON_WIDTH &&
+        y >= button_y && y <= button_y + BUTTON_HEIGHT) {
+      *selected_option = i;                          // Set the selected option based on the clicked button
+      printf("Mouse clicked on button %d\n", i);     // Debug: Print clicked button
+      handle_menu_input(KEY_ENTER, selected_option); // Simulate Enter key press
+      return;
+    }
+
+    // Move to the next button position
+    button_y += BUTTON_HEIGHT + BUTTON_SPACING;
+  }
+
+  // Debug: Print if no button was clicked
+  printf("Mouse click at (%d, %d) did not hit any button\n", x, y);
 }

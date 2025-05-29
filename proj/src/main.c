@@ -20,6 +20,7 @@ extern uint8_t packet_byte_index;
 extern int remaining_time;
 extern int selected_option;
 extern bool redraw_needed;
+extern int mouse_x, mouse_y;
 
 
 uint8_t irq_kb, irq_mouse, irq_timer;
@@ -93,9 +94,6 @@ int game_loop() {
   message msg;
 
   while (gameRunning) {
-    // Draw the menu with the updated selection
-    //draw_options(selected_option);   
-    //draw_hangman(100, 100, 0); // Draw hangman at position (100, 100) with stage 0 
 
     if (driver_receive(ANY, &msg, &ipc_status) != 0) {
       printf("driver_receive failed\n");
@@ -127,6 +125,7 @@ int game_loop() {
             if (state == MENU) {
               // Pass the scancode to handle_menu_input
               handle_menu_input(scancode, &selected_option);
+              handle_menu_click(mouse_x, mouse_y, &selected_option);
               redraw_needed = true;
             }
 
@@ -154,6 +153,7 @@ int game_loop() {
             buffer_mouse_bytes();
             if (packet_byte_index == 3) {
               process_mouse_bytes();
+              process_mouse_clicks();
               packet_byte_index = 0; // Reset for the next packet
             }
           }
