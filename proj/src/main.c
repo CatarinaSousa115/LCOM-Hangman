@@ -130,16 +130,17 @@ int game_loop() {
               redraw_needed = true;
             }
 
-            if (scancode == ESC_BREAKCODE && state == PLAY) {
-              state = EXIT;
-              redraw_needed = true;
+            if (state == PLAY) {
+              if (scancode == ESC_BREAKCODE) {
+                state = EXIT;
+                redraw_needed = true;
+              }
+
+              if (handle_game_input(scancode) == 0) {
+                redraw_needed = true;
+              }
             }
 
-            /*else if (state == PLAY) {
-              handle_game_input(scancode);
-              redraw_needed = true;
-            } */
-            
             if (scancode == ESC_BREAKCODE && state == INSTRUCTIONS) {
               state = EXIT;
               redraw_needed = true;

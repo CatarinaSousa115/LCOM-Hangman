@@ -10,6 +10,11 @@
         "sstream": "cpp",
         "graphics.h": "c",
         "menu.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "stdio.h": "c",
+        "hangman.h": "c",
+        "font.h": "c",
+        "game.h": "c",
+        "instructions.h": "c"
     }
 }
