@@ -1,12 +1,13 @@
-#include "hangman.h"
-#include "game_state.h"
-#include "instructions.h"
-#include "menu.h"
-#include "../game/game.h"
-#include "../peripherals/graphics/graphics.h"
-#include "words.h"
-#include "../assets/font.h"
+#include "../peripherals/graphics/graphics.h"  
+#include "../assets/font.h"                  
 #include "../assets/game_pixmap.h"
+
+#include "words.h"           
+#include "hangman.h"          
+#include "menu.h"             
+#include "instructions.h"     
+#include "../game/game.h"    
+#include "game_state.h"
 
 
 int current_stage = 0;

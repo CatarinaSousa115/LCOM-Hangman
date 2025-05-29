@@ -1,5 +1,5 @@
-#ifndef HANGMAN_H
-#define HANGMAN_H
+#ifndef INSTRUCTIONS_H
+#define INSTRUCTIONS_H
 
 #include <stdbool.h>
 #include <stdint.h>
