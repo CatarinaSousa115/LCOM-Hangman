@@ -41,7 +41,7 @@ void draw_game_over_screen() {
 
 int handle_game_input(uint8_t scancode) {
 
-  char letter = scancode_to_uppercase(scancode);
+  char letter = scancode_to_letter(scancode);
 
   //not a letter
   if (letter == 0) {

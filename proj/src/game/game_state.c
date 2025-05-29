@@ -1,7 +1,7 @@
+#include "hangman.h"
 #include "game_state.h"
 #include "instructions.h"
 #include "menu.h"
-#include "hangman.h"
 #include "../game/game.h"
 #include "../peripherals/graphics/graphics.h"
 #include "words.h"
@@ -30,7 +30,7 @@ void handle_game_state() {
             }
     
             draw_word_guesses();
-            //draw_hangman(100,100,0);
+            draw_hangman(100,100, current_stage);
             //To implement
             //draw_used_letters();
             

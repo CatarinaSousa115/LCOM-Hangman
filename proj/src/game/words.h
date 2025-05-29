@@ -12,14 +12,15 @@ extern char displayed_word[];
 
 #define MAX_WORD_LENGTH 20 //aux for tha max length we allow in a word
 
+//associates scancodes with letters
 typedef struct {
     uint8_t scancode;
-    char uppercase;
+    char letter;
 } KeyMap;
 
 void generate_guessword();
 
-char scancode_to_uppercase(uint8_t scancode);
+char scancode_to_letter(uint8_t scancode);
 
 #endif
 

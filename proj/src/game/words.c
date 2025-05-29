@@ -63,12 +63,12 @@ void generate_guessword() {
 }
 
 
-char scancode_to_uppercase(uint8_t scancode) {
+char scancode_to_letter(uint8_t scancode) {
   
   for (int i = 0; i < 26; i++) {  
     
     if (key_map[i].scancode == scancode) {
-      return key_map[i].uppercase;
+      return key_map[i].letter;
     }
   }
   
