@@ -76,6 +76,7 @@ int handle_game_input(uint8_t scancode) {
 }
 
 
+//need te be changed
 void draw_word_guesses() {
 
   int word_size = strlen(guess_word);
