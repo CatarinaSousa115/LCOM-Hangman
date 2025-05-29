@@ -1,6 +1,7 @@
 #include "game.h"
 #include "menu.h"
 #include "words.h"
+#include "hangman.h"
 #include "../assets/font.h"
 #include "../peripherals/graphics/graphics.h"
 #include "../peripherals/i8042.h"
@@ -10,9 +11,10 @@
 extern uint32_t timer_counter;
 extern const char *guess_word;
 extern int current_stage;
+extern char displayed_word[];
 
 void gameCountdown(int remaining_time) {
-  
+
   int unit_number = remaining_time % 10; 
   int tens_number = (remaining_time/ 10) % 10;
 
@@ -80,11 +82,14 @@ int handle_game_input(uint8_t scancode) {
 void draw_word_guesses() {
 
   int word_size = strlen(guess_word);
+  int start_x = 300;
 
   draw_string(guess_word, 300, 200, 0XFFFFFF, 5);
 
   for (int i = 0; i < word_size; i++) {
-    draw_string("_", 300 + (50 * i), 500, 0XFFFFFF, 5);
+    char letter = displayed_word[i];
+
+    draw_string(&letter, start_x + (50 * i), 500, 0XFFFFFF, 5);
   }
 }
 
