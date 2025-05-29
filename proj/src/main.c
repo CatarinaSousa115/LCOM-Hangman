@@ -136,8 +136,9 @@ int game_loop() {
             }
 
             /*else if (state == PLAY) {
-              handle_game_input(scancode);
-              redraw_needed = true;
+              if (handle_game_input(scancode) == 0) {
+                redraw_needed = true;
+              };
             } */
             
             if (scancode == ESC_BREAKCODE && state == INSTRUCTIONS) {

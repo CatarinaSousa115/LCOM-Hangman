@@ -8,8 +8,8 @@
 #include <stdlib.h>
 
 extern uint32_t timer_counter;
-
-
+extern const char *guess_word;
+extern int current_stage;
 
 void gameCountdown(int remaining_time) {
   
@@ -37,14 +37,54 @@ void draw_game_over_screen() {
 }
 
 
-void handle_game_input(uint8_t scancode) {
+int handle_game_input(uint8_t scancode) {
 
-  
-  if (scancode == SCANCODE_A) {
-    draw_string("Pressed A!", 500, 400, TEXT_COLOR, 3);
+  char letter = scancode_to_uppercase(scancode);
+
+  //not a letter
+  if (letter == 0) {
+    return 1; 
   }
 
-  if (scancode == SCANCODE_B) {
-    draw_string("Pressed B!", 500, 400, TEXT_COLOR, 3);
+  int letter_index = letter - 'A'; //calculate the index of the letter in the array of booleans
+    
+   //letter already gessed
+  if (guessed_letters[letter_index]) {
+    return 1;
+  }
+
+  guessed_letters[letter_index] = true;
+  bool correct_guess = false;
+    
+  //verify if the letter is in the word
+  int word_size = strlen(guess_word);
+  for (int i = 0; i < word_size; i++) {
+    if (guess_word[i] == letter) {
+
+      //if the letter is in the word we change the "_" in the displayed word to the letter gessed
+      displayed_word[i] = letter;
+      correct_guess = true;
+    }
+  }
+    
+  //incorrect guess
+  if (!correct_guess) {
+    current_stage++;  //the hangman goes to the next stage
+  }
+    
+  return 0;
+}
+
+
+void draw_word_guesses() {
+
+  int word_size = strlen(guess_word);
+
+  draw_string(guess_word, 300, 200, 0XFFFFFF, 5);
+
+  for (int i = 0; i < word_size; i++) {
+    draw_string("_", 300 + (50 * i), 500, 0XFFFFFF, 5);
   }
 }
+
+

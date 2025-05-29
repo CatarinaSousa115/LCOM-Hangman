@@ -33,7 +33,7 @@ void handle_game_state() {
             //draw_hangman(current_stage);
 
             //To implement
-            //draw_word_state();
+            draw_word_guesses();
             //draw_used_letters();
             
             gameCountdown(remaining_time);
