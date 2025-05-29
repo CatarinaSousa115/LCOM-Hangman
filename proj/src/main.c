@@ -156,6 +156,10 @@ int game_loop() {
               process_mouse_clicks();
               packet_byte_index = 0; // Reset for the next packet
             }
+
+            if (state == MENU) {
+              update_selected_option(mouse_x, mouse_y, &selected_option);
+            }
           }
           break;
         default:

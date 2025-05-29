@@ -31,6 +31,13 @@ void draw_instructions_screen(void) {
   int bx = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
   int by = SCREEN_HEIGHT - BUTTON_HEIGHT - 80;
 
+  extern int mouse_x, mouse_y;
+  uint32_t back_color = BUTTON_COLOR;
+  if (mouse_x >= bx && mouse_x <= bx + BUTTON_WIDTH &&
+      mouse_y >= by && mouse_y <= by + BUTTON_HEIGHT) {
+    back_color = HIGHLIGHT_COLOR;
+  }
+
   // Center the "Back" text on the button
   const char *back_label = "Back";
   int label_width = strlen(back_label) * 8 * 2;
@@ -53,7 +60,7 @@ void draw_instructions_screen(void) {
   }
 
   // Draw the button rectangle
-  vg_draw_rectangle(bx, by, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR);
+  vg_draw_rectangle(bx, by, BUTTON_WIDTH, BUTTON_HEIGHT, back_color);
 
   // Draw the 'Back' button
   draw_string(back_label, label_x, label_y, TEXT_COLOR, 2);

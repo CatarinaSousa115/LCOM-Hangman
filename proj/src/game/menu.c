@@ -137,3 +137,22 @@ void handle_menu_click(int x, int y, int *selected_option) {
     }
   }
 }
+
+void update_selected_option(int mouse_x, int mouse_y, int *selected_option) {
+  if (state != MENU)
+    return;
+
+  int button_y = (SCREEN_HEIGHT - ((3 * BUTTON_HEIGHT) + (2 * BUTTON_SPACING))) / 2;
+  for (int i = 0; i < 3; i++) {
+    int button_x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
+    if (mouse_x >= button_x && mouse_x <= button_x + BUTTON_WIDTH &&
+        mouse_y >= button_y && mouse_y <= button_y + BUTTON_HEIGHT) {
+          if (*selected_option != i){
+            *selected_option = i;
+            redraw_needed = true;
+          }
+      return;
+    }
+    button_y += BUTTON_HEIGHT + BUTTON_SPACING;
+  }
+}

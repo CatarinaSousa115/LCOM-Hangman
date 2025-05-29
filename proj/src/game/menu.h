@@ -16,5 +16,6 @@ extern bool gameRunning; // Variable to control the game loop
 void draw_options();
 void handle_menu_input(uint8_t scancode, int *selected_option);
 void handle_menu_click(int x, int y, int *selected_option);
+void update_selected_option(int mouse_x, int mouse_y, int *selected_option);
 
 #endif
