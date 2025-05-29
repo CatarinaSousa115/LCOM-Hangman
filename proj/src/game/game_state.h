@@ -21,5 +21,7 @@ void handle_game_state();
 
 void reset_game_state();
 
+bool check_win();
+
 #endif
 
