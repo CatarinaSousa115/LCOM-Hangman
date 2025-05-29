@@ -28,17 +28,15 @@ void draw_instructions_screen(void) {
   int iy = 100;
 
   // button position
-  int button_width = 200;
-  int button_height = 50;
-  int bx = (SCREEN_WIDTH - button_width) / 2;
-  int by = SCREEN_HEIGHT - button_height - 80;
+  int bx = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
+  int by = SCREEN_HEIGHT - BUTTON_HEIGHT - 80;
 
   // Center the "Back" text on the button
   const char *back_label = "Back";
   int label_width = strlen(back_label) * 8 * 2;
   int label_height = 8 * 2;
-  int label_x = bx + (button_width - label_width) / 2;
-  int label_y = by + (button_height - label_height) / 2;
+  int label_x = bx + (BUTTON_WIDTH - label_width) / 2;
+  int label_y = by + (BUTTON_HEIGHT - label_height) / 2;
 
   // instructions position
   int num_lines = sizeof(instructions) / sizeof(instructions[0]);
@@ -55,7 +53,7 @@ void draw_instructions_screen(void) {
   }
 
   // Draw the button rectangle
-  vg_draw_rectangle(bx, by, button_width, button_height, BUTTON_COLOR);
+  vg_draw_rectangle(bx, by, BUTTON_WIDTH, BUTTON_HEIGHT, BUTTON_COLOR);
 
   // Draw the 'Back' button
   draw_string(back_label, label_x, label_y, TEXT_COLOR, 2);

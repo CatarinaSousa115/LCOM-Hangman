@@ -93,38 +93,47 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
         case 2:
           gameRunning = false; // Exit the game
           break;
-      }
-      break;
 
-    default:
-      // Handle other keys if necessary
-      break;
+        default:
+          // Handle other keys if necessary
+          break;
+      }
   }
 }
 
 void handle_menu_click(int x, int y, int *selected_option) {
-  // Calculate the starting position of the first button
-  int button_y = (SCREEN_HEIGHT - ((3 * BUTTON_HEIGHT) + (2 * BUTTON_SPACING))) / 2; // Center vertically
+  if (state == MENU) {
+    // Calculate the starting position of the first button
+    int button_y = (SCREEN_HEIGHT - ((3 * BUTTON_HEIGHT) + (2 * BUTTON_SPACING))) / 2; // Center vertically
 
-  for (int i = 0; i < 3; i++) {
-    int button_x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2; // Center horizontally
+    for (int i = 0; i < 3; i++) {
+      int button_x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
 
-    // Debug: Print button bounds
-    printf("Button %d bounds: x=[%d, %d], y=[%d, %d]\n", i, button_x, button_x + BUTTON_WIDTH, button_y, button_y + BUTTON_HEIGHT);
+      // Check if the click is within the bounds of the button
+      if (x >= button_x && x <= button_x + BUTTON_WIDTH &&
+          y >= button_y && y <= button_y + BUTTON_HEIGHT) {
+        *selected_option = i;                          // Set the selected option based on the clicked button
+        handle_menu_input(KEY_ENTER, selected_option); // Simulate Enter key press
+        return;
+      }
 
-    // Check if the click is within the bounds of the button
-    if (x >= button_x && x <= button_x + BUTTON_WIDTH &&
-        y >= button_y && y <= button_y + BUTTON_HEIGHT) {
-      *selected_option = i;                          // Set the selected option based on the clicked button
-      printf("Mouse clicked on button %d\n", i);     // Debug: Print clicked button
-      handle_menu_input(KEY_ENTER, selected_option); // Simulate Enter key press
-      return;
+      // Move to the next button position
+      button_y += BUTTON_HEIGHT + BUTTON_SPACING;
     }
-
-    // Move to the next button position
-    button_y += BUTTON_HEIGHT + BUTTON_SPACING;
   }
 
-  // Debug: Print if no button was clicked
-  printf("Mouse click at (%d, %d) did not hit any button\n", x, y);
+  if (state == INSTRUCTIONS) {
+    // Calculate the position of the "Back" button
+    int back_button_x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;  // Center horizontally
+    int back_button_y = SCREEN_HEIGHT - BUTTON_HEIGHT - 80; // Position near the bottom
+
+    // Handle clicks on the "Back" button
+    if (x >= back_button_x && x <= back_button_x + BUTTON_WIDTH &&
+        y >= back_button_y && y <= back_button_y + BUTTON_HEIGHT) {
+      state = MENU; // Return to menu on click
+      clear_screen();
+      redraw_needed = true;
+
+    }
+  }
 }

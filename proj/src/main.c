@@ -140,7 +140,7 @@ int game_loop() {
               }
             }
 
-            if (scancode == ESC_BREAKCODE && state == INSTRUCTIONS) {
+            if ((scancode == ESC_BREAKCODE || scancode == KEY_ENTER) && state == INSTRUCTIONS) {
               state = EXIT;
               redraw_needed = true;
             }
