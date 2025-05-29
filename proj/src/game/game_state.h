@@ -6,6 +6,7 @@
 typedef enum {
   MENU,
   PLAY,
+  WIN,
   INSTRUCTIONS,
   EXIT
 } StateOptions;
@@ -20,6 +21,8 @@ extern bool redraw_needed;
 void handle_game_state();
 
 void reset_game_state();
+
+bool check_win();
 
 #endif
 

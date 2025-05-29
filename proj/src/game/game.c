@@ -9,6 +9,7 @@
 #include <stdlib.h>
 
 extern uint32_t timer_counter;
+extern int remaining_time;
 extern const char *guess_word;
 extern int current_stage;
 extern char displayed_word[];
@@ -22,20 +23,28 @@ void gameCountdown(int remaining_time) {
 
   if (tens_number > 0) {
     
-    draw_letter('0' + tens_number, SCREEN_WIDTH - 200, 60, 0xFFF000, 4);
-    draw_letter('0' + unit_number, SCREEN_WIDTH - 150, 60, 0xFFF000, 4);
+    draw_letter('0' + tens_number, SCREEN_WIDTH - 200, 60, 3, 4);
+    draw_letter('0' + unit_number, SCREEN_WIDTH - 150, 60, 3, 4);
   }
 
   else {
-    draw_letter('0' + unit_number, SCREEN_WIDTH - 150, 60, 0xFFF000, 4);
+    draw_letter('0' + unit_number, SCREEN_WIDTH - 150, 60, 36, 4);
   }
 }
 
 
 void draw_game_over_screen() {
 
-  vg_draw_rectangle(0, 0, SCREEN_WIDTH / 6, SCREEN_HEIGHT / 6, 0x000000); 
-  draw_string("Time's up!", 500, 400, TEXT_COLOR, 3);
+  clear_screen();
+  const char *lose_text; 
+  if(remaining_time == 0){
+    lose_text = "Time's up!";
+  }
+  else {
+    lose_text = "You lose!";
+  }
+
+  draw_string(lose_text, (SCREEN_WIDTH - strlen(lose_text)) / 2, SCREEN_HEIGHT / 2, TEXT_COLOR, 3);
 }
 
 
@@ -74,7 +83,21 @@ int handle_game_input(uint8_t scancode) {
     current_stage++;  //the hangman goes to the next stage
   }
     
+  remaining_time = TIME_LIMIT; 
   return 0;
+}
+
+bool check_win() {
+  //check if the player has won
+  int word_size = strlen(guess_word);
+  
+  for (int i = 0; i < word_size; i++) {
+    if (displayed_word[i] == '_') {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 
@@ -82,15 +105,17 @@ int handle_game_input(uint8_t scancode) {
 void draw_word_guesses() {
 
   int word_size = strlen(guess_word);
-  int start_x = 300;
+  int start_x = 650;
 
-  draw_string(guess_word, 300, 200, 0XFFFFFF, 5);
+  draw_string(guess_word, 650, 200, 63, 4);
 
   for (int i = 0; i < word_size; i++) {
     char letter = displayed_word[i];
 
-    draw_string(&letter, start_x + (50 * i), 500, 0XFFFFFF, 5);
+    draw_string(&letter, start_x + (50 * i), 500, 63, 4);
   }
 }
+
+
 
 
