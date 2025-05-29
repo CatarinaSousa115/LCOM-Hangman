@@ -6,7 +6,6 @@
 typedef enum {
   MENU,
   PLAY,
-  WIN,
   INSTRUCTIONS,
   EXIT
 } StateOptions;

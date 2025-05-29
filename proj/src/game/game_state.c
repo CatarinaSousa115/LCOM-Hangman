@@ -32,7 +32,7 @@ void handle_game_state() {
 
             if (remaining_time == 0) {
 
-                if(current_stage <= 6) {
+                if(current_stage < 6) {
                     current_stage++;
                     remaining_time = TIME_LIMIT
                 }
@@ -61,20 +61,10 @@ void handle_game_state() {
             
             if(check_win()) {
                 clear_screen();
-                state = WIN;
+                state = EXIT;
                 redraw_needed = true;
             }
 
-            break;
-
-        case WIN:      
-            draw_string("You win!", 500, 400, TEXT_COLOR, 3);
-                        
-            if (timer_counter % 180 == 0) {
-                reset_game_state();
-                is_setup = true;
-                redraw_needed = true;
-            }
             break;
 
 
@@ -84,6 +74,7 @@ void handle_game_state() {
             
         case EXIT:
             draw_game_over_screen();
+
             if(timer_counter % 60 == 0){
                 reset_game_state();
                 is_setup = true;

@@ -32,19 +32,39 @@ void gameCountdown(int remaining_time) {
   }
 }
 
+bool check_win() {
+  //check if the player has won
+  int word_size = strlen(guess_word);
+  
+  for (int i = 0; i < word_size; i++) {
+    if (displayed_word[i] == '_') {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 
 void draw_game_over_screen() {
 
   clear_screen();
-  const char *lose_text; 
-  if(remaining_time == 0){
-    lose_text = "Time's up!";
-  }
+  const char *output_text; 
+
+  if (check_win()) {
+    output_text = "You win!";
+  } 
+  
   else {
-    lose_text = "You lose!";
+    if(remaining_time == 0){
+    output_text = "Time's up!";
+    }
+    else {
+      output_text = "You lose!";
+    }
   }
 
-  draw_string(lose_text, (SCREEN_WIDTH - strlen(lose_text)) / 2, SCREEN_HEIGHT / 2, TEXT_COLOR, 3);
+  draw_string(output_text, (SCREEN_WIDTH - strlen(output_text) * 8 * 3) / 2, SCREEN_HEIGHT / 2, TEXT_COLOR, 3);
 }
 
 
@@ -86,20 +106,6 @@ int handle_game_input(uint8_t scancode) {
   remaining_time = TIME_LIMIT; 
   return 0;
 }
-
-bool check_win() {
-  //check if the player has won
-  int word_size = strlen(guess_word);
-  
-  for (int i = 0; i < word_size; i++) {
-    if (displayed_word[i] == '_') {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 
 //need te be changed
 void draw_word_guesses() {
