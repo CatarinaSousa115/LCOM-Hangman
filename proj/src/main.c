@@ -2,17 +2,17 @@
 
 #include "assets/font.h"
 #include "assets/game_pixmap.h"
+#include "game/categories.h"
+#include "game/game.h"
+#include "game/game_state.h"
+#include "game/hangman.h"
+#include "game/menu.h"
 #include "peripherals/graphics/VBE.h"
 #include "peripherals/graphics/graphics.h"
 #include "peripherals/i8042.h"
 #include "peripherals/i8254.h"
 #include "peripherals/keyboard/keyboard.h"
 #include "peripherals/mouse/mouse.h"
-#include "game/hangman.h"
-#include "game/game_state.h"
-#include "game/menu.h"
-#include "game/categories.h"
-#include "game/game.h"
 
 #include <time.h>
 
@@ -25,12 +25,10 @@ extern int categories_selected_option;
 extern bool redraw_needed;
 extern int mouse_x, mouse_y;
 
-
 uint8_t irq_kb, irq_mouse, irq_timer;
 bool gameRunning = true;
 StateOptions state = MENU;
 bool enter_pressed = false;
-
 
 int(main)(int argc, char *argv[]) {
   lcf_set_language("EN-US");
@@ -49,7 +47,7 @@ int(main)(int argc, char *argv[]) {
 
 int init_devices() {
 
-  if (map_main_bufferory(0x105) != 0) {
+  if (map_main_buffer(0x105) != 0) {
     return 1;
   }
 
@@ -121,16 +119,16 @@ int game_loop() {
             timer_int_handler();
 
             if (timer_counter % 30 == 0) {
-              redraw_needed = true; 
-            }      
+              redraw_needed = true;
+            }
 
-            //if we are playing decrease the remaining time
+            // if we are playing decrease the remaining time
             if ((timer_counter % 30 == 0) && (state == PLAY)) {
-              redraw_needed = true; 
+              redraw_needed = true;
               remaining_time--;
             }
           }
-          
+
           // Keyboard interrupt
           if (msg.m_notify.interrupts & irq_kb) {
             keyboard_ih();
@@ -145,9 +143,11 @@ int game_loop() {
                   handle_categories_input(scancode, &categories_selected_option);
                 }
               }
-            } else if (scancode == KEY_ENTER_BREAK) {
+            }
+            else if (scancode == KEY_ENTER_BREAK) {
               enter_pressed = false;
-            } else {
+            }
+            else {
               // Handle other keys as usual
               if (state == MENU) {
                 handle_menu_input(scancode, &menu_selected_option);
@@ -158,7 +158,7 @@ int game_loop() {
             }
 
             if (state == PLAY) {
-              if (scancode == ESC_BREAKCODE) {    
+              if (scancode == ESC_BREAKCODE) {
                 reset_game_state();
               }
 
@@ -170,7 +170,7 @@ int game_loop() {
             if (scancode == ESC_BREAKCODE && state == INSTRUCTIONS) {
               state = MENU;
               redraw_needed = true;
-              }
+            }
           }
 
           // Mouse interrupt
@@ -196,23 +196,22 @@ int game_loop() {
       }
     }
 
-   if (redraw_needed) {
-      clear_back_buffer();       
-      handle_game_state();       
-      swap_buffers();          
+    if (redraw_needed) {
+      clear_back_buffer();
+      handle_game_state();
+      swap_buffers();
       redraw_needed = false;
-  }
+    }
   }
   return 0;
 }
-
 
 int(proj_main_loop)(int argc, char *argv[]) {
 
   if (init_devices())
     return 1;
 
-  if(init_mouse_pointer() != 0){
+  if (init_mouse_pointer() != 0) {
     return 1;
   }
 
