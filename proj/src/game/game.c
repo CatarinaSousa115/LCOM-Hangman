@@ -127,8 +127,6 @@ void draw_word_guesses() {
   int word_size = strlen(guess_word);
   int start_x = 530;
 
-   draw_string(guess_word, 650, 200, 63, 4);  
-
   for (int i = 0; i < word_size; i++) {
     char letter = displayed_word[i];
 
