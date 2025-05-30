@@ -122,13 +122,13 @@ int handle_game_input(uint8_t scancode) {
   return 0;
 }
 
-//need te be changed
+
 void draw_word_guesses() {
 
   int word_size = strlen(guess_word);
   int start_x = 530;
 
-  //draw_string(guess_word, 650, 200, 63, 4); --> we need to remove this 
+  //draw_string(guess_word, 650, 200, 63, 4); --> cheat to display word 
 
   for (int i = 0; i < word_size; i++) {
     char letter = displayed_word[i];

@@ -1,3 +1,4 @@
+
 #include "../peripherals/graphics/graphics.h"  
 #include "../assets/font.h"                  
 #include "../assets/game_pixmap.h"
@@ -76,8 +77,7 @@ void handle_game_state() {
 
             if(timer_counter % 180 == 0){
                 reset_game_state();
-                is_setup = true;
-                redraw_needed = true;
+                
             
             }
             break;
@@ -97,4 +97,6 @@ void reset_game_state() {
     current_stage = 0;
     selected_option = 0;
     memset(guessed_letters, 0, sizeof(guessed_letters)); //clear the gessed_letters (all false again)
+    is_setup = true;
+    redraw_needed = true;
 }
