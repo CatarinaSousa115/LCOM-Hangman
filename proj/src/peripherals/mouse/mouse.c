@@ -186,27 +186,29 @@ void draw_mouse_pointer_to_back_buffer() {
 }
 
 void update_mouse_position() {
-  clear_back_buffer();
+  int speed = 2;
 
   // Update horizontal position
-  if (mouse_x + mouse_packet.delta_x < 0 && !mouse_packet.x_ov) {
+  int dx = mouse_packet.delta_x * speed;
+  if (mouse_x + dx < 0 && !mouse_packet.x_ov) {
     mouse_x = 0;
   }
-  else if (mouse_x + mouse_packet.delta_x > SCREEN_WIDTH - mouse_img.width && !mouse_packet.x_ov) {
+  else if (mouse_x + dx > SCREEN_WIDTH - mouse_img.width && !mouse_packet.x_ov) {
     mouse_x = SCREEN_WIDTH - mouse_img.width;
   }
   else if (!mouse_packet.x_ov) {
-    mouse_x += mouse_packet.delta_x;
+    mouse_x += dx;
   }
 
   // Update vertical position
-  if (mouse_y - mouse_packet.delta_y < 0 && !mouse_packet.y_ov) {
+  int dy = mouse_packet.delta_y * speed;
+  if (mouse_y - dy < 0 && !mouse_packet.y_ov) {
     mouse_y = 0;
   }
-  else if (mouse_y - mouse_packet.delta_y > SCREEN_HEIGHT - mouse_img.height && !mouse_packet.y_ov) {
+  else if (mouse_y - dy > SCREEN_HEIGHT - mouse_img.height && !mouse_packet.y_ov) {
     mouse_y = SCREEN_HEIGHT - mouse_img.height;
   }
   else if (!mouse_packet.y_ov) {
-    mouse_y -= mouse_packet.delta_y; // Invert delta_y for correct vertical movement
+    mouse_y -= dy; // Invertido para movimento correto
   }
 }
