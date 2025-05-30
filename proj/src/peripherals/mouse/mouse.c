@@ -188,7 +188,7 @@ void update_mouse_position() {
 
 void process_mouse_clicks() {
   if (mouse_packet.lb) {
-    handle_menu_click(mouse_x, mouse_y, &selected_option);
+    handle_menu_click(mouse_x, mouse_y, &menu_selected_option);
   }
 }
 

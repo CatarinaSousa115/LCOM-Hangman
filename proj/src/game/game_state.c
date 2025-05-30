@@ -32,7 +32,6 @@ void handle_game_state() {
 
         case PLAY:
             if(is_setup) {
-               generate_guessword();
                is_setup = false;
             }
 
