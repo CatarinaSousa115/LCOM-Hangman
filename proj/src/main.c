@@ -125,7 +125,6 @@ int game_loop() {
             if (state == MENU) {
               // Pass the scancode to handle_menu_input
               handle_menu_input(scancode, &selected_option);
-              handle_menu_click(mouse_x, mouse_y, &selected_option);
               redraw_needed = true;
             }
 
@@ -141,10 +140,10 @@ int game_loop() {
             }
 
             if (scancode == ESC_BREAKCODE && state == INSTRUCTIONS) {
-              state = EXIT;
+              state = MENU;
+              clear_screen();
               redraw_needed = true;
-            }
-
+              }
           }
 
           // Mouse interrupt
@@ -155,6 +154,10 @@ int game_loop() {
               process_mouse_bytes();
               process_mouse_clicks();
               packet_byte_index = 0; // Reset for the next packet
+            }
+
+            if (state == MENU) {
+              update_selected_option(mouse_x, mouse_y, &selected_option);
             }
           }
           break;
