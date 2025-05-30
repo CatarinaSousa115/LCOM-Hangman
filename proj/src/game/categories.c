@@ -78,7 +78,7 @@ void handle_categories_input(uint8_t scancode, int *selected_option) {
 
     case KEY_ENTER: {
       // Map selected_option to category string
-      const char *categories[] = {"LCOM", "MOVIES", "ANIMALS", "COUNTRIES"};
+      const char *categories[] = {"LCOM", "JOBS", "ANIMALS", "COUNTRIES"};
       generate_guessword(categories[*selected_option]);
       state = PLAY;
       break;

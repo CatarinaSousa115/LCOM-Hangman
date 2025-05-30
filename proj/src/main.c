@@ -37,6 +37,9 @@ int(main)(int argc, char *argv[]) {
   lcf_trace_calls("/home/lcom/labs/proj/trace.txt");
   lcf_log_output("/home/lcom/labs/proj/output.txt");
 
+  // Seed the random number generator
+  srand(time(NULL));
+
   if (lcf_start(argc, argv))
     return 1;
 
