@@ -15,6 +15,8 @@
 
 void draw_categories(int selected_option) {
 
+  draw_string("Choose the word theme!", 270, 60, 63, 3);
+
   const char *labels[] = {"LCOM", "JOBS", "ANIMALS", "COUNTRIES"};
   const int num_labels = 4;
 
@@ -83,6 +85,80 @@ void handle_categories_input(uint8_t scancode, int *selected_option) {
       state = PLAY;
       break;
     }
+  }
+}
+
+void handle_categories_click(int x, int y, int *selected_option) {
+  if (state == CATEGORIES) {
+    // Calculate the starting position of the first button
+    int num_categories = 4;
+    int button_y = (SCREEN_HEIGHT - ((num_categories * BUTTON_HEIGHT) + ((num_categories - 1) * BUTTON_SPACING))) / 2;
+
+    for (int i = 0; i < num_categories; i++) {
+      int button_x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
+
+      // Check if the click is within the bounds of the button
+      if (x >= button_x && x <= button_x + BUTTON_WIDTH &&
+          y >= button_y && y <= button_y + BUTTON_HEIGHT) {
+        *selected_option = i; // Set the selected option based on the clicked button
+
+        
+        const char *categories[] = {"LCOM", "JOBS", "ANIMALS", "COUNTRIES"};
+        generate_guessword(categories[*selected_option]);
+
+        // Reset game state for new round
+        extern int current_stage;
+        extern bool guessed_letters[26];
+        extern char displayed_word[];
+        extern int remaining_time;
+        extern bool is_setup;
+        current_stage = 0;
+        for (int j = 0; j < 26; j++) guessed_letters[j] = false;
+        remaining_time = TIME_LIMIT;
+        is_setup = true;
+
+        state = PLAY;
+        redraw_needed = true;
+        return;
+      }
+
+      // Move to the next button position
+      button_y += BUTTON_HEIGHT + BUTTON_SPACING;
+    }
+  }
+
+  if (state == INSTRUCTIONS) {
+    // Calculate the position of the "Back" button
+    int back_button_x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;  // Center horizontally
+    int back_button_y = SCREEN_HEIGHT - BUTTON_HEIGHT - 80; // Position near the bottom
+
+    // Handle clicks on the "Back" button
+    if (x >= back_button_x && x <= back_button_x + BUTTON_WIDTH &&
+        y >= back_button_y && y <= back_button_y + BUTTON_HEIGHT) {
+      state = MENU; // Return to menu on click
+      redraw_needed = true;
+
+    }
+  }
+}
+
+void update_categories_selected_option(int mouse_x, int mouse_y, int *selected_option) {
+  if (state != CATEGORIES)
+    return;
+
+  int num_categories = 4;
+  int button_y = (SCREEN_HEIGHT - ((num_categories * BUTTON_HEIGHT) + ((num_categories - 1) * BUTTON_SPACING))) / 2;
+  for (int i = 0; i < num_categories; i++) {
+    int button_x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
+    if (mouse_x >= button_x && mouse_x <= button_x + BUTTON_WIDTH &&
+        mouse_y >= button_y && mouse_y <= button_y + BUTTON_HEIGHT) {
+      if (*selected_option != i) {
+        *selected_option = i;
+        redraw_needed = true;
+      }
+      return;
+    }
+    button_y += BUTTON_HEIGHT + BUTTON_SPACING;
   }
 }
 

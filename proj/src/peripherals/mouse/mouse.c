@@ -1,6 +1,8 @@
 #include "mouse.h"
-#include "../../assets/mouse_pixmap.h" // Include mouse pointer XPM
-#include "../graphics/graphics.h"      // Include graphics functions
+#include "../../assets/mouse_pixmap.h"
+#include "../graphics/graphics.h" 
+#include "../../game/game_state.h"
+#include "../../game/categories.h"     
 
 int mouse_hook_id = 3;
 struct packet mouse_packet;
@@ -187,9 +189,21 @@ void update_mouse_position() {
 }
 
 void process_mouse_clicks() {
-  if (mouse_packet.lb) {
-    handle_menu_click(mouse_x, mouse_y, &menu_selected_option);
-  }
+    extern StateOptions state;
+    extern int menu_selected_option;
+    extern int categories_selected_option;
+
+    if (mouse_packet.lb) {
+        printf("Left button clicked at (%d, %d)\n", mouse_x, mouse_y);
+
+        if (state == MENU) {
+            handle_menu_click(mouse_x, mouse_y, &menu_selected_option);
+        }
+        else if (state == CATEGORIES) {
+            handle_categories_click(mouse_x, mouse_y, &categories_selected_option);
+        }
+        // You can add more states if needed (e.g., INSTRUCTIONS)
+    }
 }
 
 void draw_mouse_pointer_to_back_buffer() {

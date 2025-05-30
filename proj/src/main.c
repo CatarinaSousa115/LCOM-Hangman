@@ -120,7 +120,7 @@ int game_loop() {
           if (msg.m_notify.interrupts & irq_timer) {
             timer_int_handler();
 
-            if (timer_counter % 60 == 0) {
+            if (timer_counter % 30 == 0) {
               redraw_needed = true; 
             }      
 
@@ -185,6 +185,9 @@ int game_loop() {
 
             if (state == MENU) {
               update_selected_option(mouse_x, mouse_y, &menu_selected_option);
+            }
+            else if (state == CATEGORIES) {
+              update_categories_selected_option(mouse_x, mouse_y, &categories_selected_option);
             }
           }
           break;
