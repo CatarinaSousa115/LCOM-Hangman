@@ -17,4 +17,6 @@ int handle_game_input(uint8_t scancode);
 
 void draw_word_guesses();
 
+void draw_used_letters();
+
 #endif 

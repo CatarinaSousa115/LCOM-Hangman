@@ -33,13 +33,14 @@ void handle_game_state() {
             if (remaining_time == 0) {
 
                 if(current_stage < 6) {
+
+                    //add (+1) to the current state of the hangman and if it is not in the "final form"
                     current_stage++;
                     remaining_time = TIME_LIMIT
                 }
 
                 else {
-                    //when we implement the game, we will add (+1) to the current state of the hangman and if it is not in the "final form"
-                    //we dont change state, but if we are in the last form we end the game (state == EXIT e dar redraw)
+
                     state = EXIT;
                 }
 
@@ -51,13 +52,11 @@ void handle_game_state() {
                 redraw_needed = true;
             }
     
-            draw_word_guesses();
             draw_hangman(5, 150, current_stage);
-            //To implement
-            //draw_used_letters();
+            draw_word_guesses();
+            draw_used_letters();
             
             gameCountdown(remaining_time);
-                                        //max hangman stage
             
             if(check_win()) {
                 clear_screen();
@@ -75,7 +74,7 @@ void handle_game_state() {
         case EXIT:
             draw_game_over_screen();
 
-            if(timer_counter % 60 == 0){
+            if(timer_counter % 180 == 0){
                 reset_game_state();
                 is_setup = true;
                 redraw_needed = true;

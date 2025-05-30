@@ -131,7 +131,8 @@ int game_loop() {
 
             if (state == PLAY) {
               if (scancode == ESC_BREAKCODE) {
-                state = EXIT;
+                clear_screen();
+                state = MENU;
                 redraw_needed = true;
               }
 
