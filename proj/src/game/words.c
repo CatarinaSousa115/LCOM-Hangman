@@ -31,12 +31,27 @@ KeyMap key_map[26] = {
   {0x2C, 'Z'},
 };
 
+//max word size is 10 (now)
 const char *guesswords[] = {
     "HANGMAN",
     "COMPUTER",
     "PROGRAMMING",
     "KEYBOARD",
-    "MOUSE"
+    "MOUSE",
+    "MONITOR",      
+    "SOFTWARE",     
+    "HARDWARE",     
+    "PROCESSOR", 
+    "DATABASE",    
+    "NETWORK",     
+    "ALGORITHM",    
+    "FUNCTION",     
+    "COMPILER",    
+    "TERMINAL",     
+    "GRAPHICS",     
+    "INTERNET",     
+    "ROUTER",      
+    "WEBCAM"
 };
 
 const int guesswords_count = sizeof(guesswords) / sizeof(guesswords[0]);

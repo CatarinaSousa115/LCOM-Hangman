@@ -14,6 +14,9 @@ extern const char *guess_word;
 extern int current_stage;
 extern char displayed_word[];
 
+//array to keep track of the wrong guessed letters
+char wrong_letters[6]; 
+
 void gameCountdown(int remaining_time) {
 
   int unit_number = remaining_time % 10; 
@@ -53,18 +56,27 @@ void draw_game_over_screen() {
 
   if (check_win()) {
     output_text = "You win!";
+
+    draw_string(output_text, (SCREEN_WIDTH - strlen(output_text) * 8 * 3) / 2, SCREEN_HEIGHT / 2, TEXT_COLOR, 3);
   } 
   
   else {
+    const char *output_word ;
+    
     if(remaining_time == 0){
-    output_text = "Time's up!";
+      output_text = "Time's up!";
     }
+
     else {
       output_text = "You lose!";
     }
-  }
 
-  draw_string(output_text, (SCREEN_WIDTH - strlen(output_text) * 8 * 3) / 2, SCREEN_HEIGHT / 2, TEXT_COLOR, 3);
+    output_word = "Your word was: ";
+
+    draw_string(output_text, (SCREEN_WIDTH - strlen(output_text) * 8 * 3) / 2, SCREEN_HEIGHT / 2, TEXT_COLOR, 3);
+    draw_string(output_word, (SCREEN_WIDTH - strlen(output_word) * 8 * 3) / 2, SCREEN_HEIGHT / 2 + 40, TEXT_COLOR, 3);
+    draw_string(guess_word, (SCREEN_WIDTH - strlen(output_word) * 8 * 3) / 2 + 10, SCREEN_HEIGHT / 2 + 80, TEXT_COLOR, 3);
+  }
 }
 
 
@@ -100,6 +112,9 @@ int handle_game_input(uint8_t scancode) {
     
   //incorrect guess
   if (!correct_guess) {
+
+    //if the guess wass wrong, we add the letter to the array of wrong letters
+    wrong_letters[current_stage] = letter;
     current_stage++;  //the hangman goes to the next stage
   }
     
@@ -107,21 +122,31 @@ int handle_game_input(uint8_t scancode) {
   return 0;
 }
 
-//need te be changed
+
 void draw_word_guesses() {
 
   int word_size = strlen(guess_word);
-  int start_x = 650;
+  int start_x = 530;
 
-  draw_string(guess_word, 650, 200, 63, 4);
+  //draw_string(guess_word, 650, 200, 63, 4); --> cheat to display word 
 
   for (int i = 0; i < word_size; i++) {
     char letter = displayed_word[i];
 
-    draw_string(&letter, start_x + (50 * i), 500, 63, 4);
+    draw_string(&letter, start_x + (50 * i), 350, 63, 4);
   }
 }
 
+
+void draw_used_letters() {
+  
+  for (int i = 0; i < current_stage; i++) {
+    char letter = wrong_letters[i];
+    int x_position = 650;
+    
+    draw_string(&letter, x_position + (50 * i), 500, 36, 4);
+  }
+}
 
 
 

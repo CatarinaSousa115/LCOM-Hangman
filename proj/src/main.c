@@ -2,16 +2,17 @@
 
 #include "assets/font.h"
 #include "assets/game_pixmap.h"
-#include "game/hangman.h"
-#include "game/game_state.h"
-#include "game/menu.h"
 #include "peripherals/graphics/VBE.h"
 #include "peripherals/graphics/graphics.h"
 #include "peripherals/i8042.h"
 #include "peripherals/i8254.h"
 #include "peripherals/keyboard/keyboard.h"
 #include "peripherals/mouse/mouse.h"
+#include "game/hangman.h"
+#include "game/game_state.h"
+#include "game/menu.h"
 #include "game/game.h"
+
 #include <time.h>
 
 extern uint32_t timer_counter;
@@ -129,9 +130,8 @@ int game_loop() {
             }
 
             if (state == PLAY) {
-              if (scancode == ESC_BREAKCODE) {
-                state = EXIT;
-                redraw_needed = true;
+              if (scancode == ESC_BREAKCODE) {    
+                reset_game_state();
               }
 
               if (handle_game_input(scancode) == 0) {
