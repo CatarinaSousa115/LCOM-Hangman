@@ -2,16 +2,16 @@
 
 #include "assets/font.h"
 #include "assets/game_pixmap.h"
+#include "game/game.h"
+#include "game/game_state.h"
+#include "game/hangman.h"
+#include "game/menu.h"
 #include "peripherals/graphics/VBE.h"
 #include "peripherals/graphics/graphics.h"
 #include "peripherals/i8042.h"
 #include "peripherals/i8254.h"
 #include "peripherals/keyboard/keyboard.h"
 #include "peripherals/mouse/mouse.h"
-#include "game/hangman.h"
-#include "game/game_state.h"
-#include "game/menu.h"
-#include "game/game.h"
 
 #include <time.h>
 
@@ -22,12 +22,9 @@ extern int remaining_time;
 extern int selected_option;
 extern bool redraw_needed;
 extern int mouse_x, mouse_y;
-
-
-uint8_t irq_kb, irq_mouse, irq_timer;
+uint8_t irq_timer, irq_kb, irq_mouse;
 bool gameRunning = true;
 StateOptions state = MENU;
-
 
 int(main)(int argc, char *argv[]) {
   lcf_set_language("EN-US");
@@ -115,16 +112,16 @@ int game_loop() {
             timer_int_handler();
 
             if (timer_counter % 60 == 0) {
-              redraw_needed = true; 
-            } 
+              redraw_needed = true;
+            }
 
-            //if we are playing decrease the remaining time
+            // if we are playing decrease the remaining time
             if ((timer_counter % 30 == 0) && (state == PLAY)) {
-              redraw_needed = true; 
+              redraw_needed = true;
               remaining_time--;
             }
           }
-          
+
           // Keyboard interrupt
           if (msg.m_notify.interrupts & irq_kb) {
             keyboard_ih();
@@ -136,7 +133,7 @@ int game_loop() {
             }
 
             if (state == PLAY) {
-              if (scancode == ESC_BREAKCODE) {    
+              if (scancode == ESC_BREAKCODE) {
                 reset_game_state();
               }
 
@@ -149,18 +146,13 @@ int game_loop() {
               state = MENU;
               clear_screen();
               redraw_needed = true;
-              }
+            }
           }
 
           // Mouse interrupt
           if (msg.m_notify.interrupts & irq_mouse) {
             mouse_ih();
             buffer_mouse_bytes();
-            if (packet_byte_index == 3) {
-              process_mouse_bytes();
-              process_mouse_clicks();
-              packet_byte_index = 0; // Reset for the next packet
-            }
 
             if (state == MENU) {
               update_selected_option(mouse_x, mouse_y, &selected_option);
@@ -172,25 +164,28 @@ int game_loop() {
       }
     }
 
-   if (redraw_needed) {
-      clear_back_buffer();       
-      handle_game_state();       
-      swap_buffers();          
+    if (redraw_needed) {
+      clear_back_buffer();
+      handle_game_state(); 
+      draw_mouse_pointer();
+      swap_buffers();
       redraw_needed = false;
-  }
+    }
   }
   return 0;
 }
-
 
 int(proj_main_loop)(int argc, char *argv[]) {
 
   if (init_devices())
     return 1;
 
-  if(init_mouse_pointer() != 0){
+  if (init_mouse_pointer() != 0) {
     return 1;
   }
+
+  init_mouse_background(bytes_per_pixel);
+  save_background(mouse_x, mouse_y);
 
   if (game_loop() != 0) {
     printf("Error during interrupt processing.\n");
