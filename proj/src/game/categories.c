@@ -1,3 +1,4 @@
+#include "categories.h"
 #include "../assets/font.h"
 #include "../assets/game_pixmap.h"
 #include "../peripherals/graphics/graphics.h"
@@ -14,7 +15,7 @@
 
 void draw_categories(int selected_option) {
 
-  const char *labels[] = {"LCOM", "MOVIES", "ANIMALS", "COUNTRIES"};
+  const char *labels[] = {"LCOM", "JOBS", "ANIMALS", "COUNTRIES"};
   const int num_labels = 4;
 
   // Calculate the total height of all buttons and spacings
@@ -51,6 +52,37 @@ void draw_categories(int selected_option) {
 
     // Move to the next button position
     y += BUTTON_HEIGHT + BUTTON_SPACING;
+  }
+}
+
+void handle_categories_input(uint8_t scancode, int *selected_option) {
+
+  switch (scancode) {
+    case ESC_BREAKCODE:
+      state = MENU;
+      break;
+
+    case KEY_UP_ARROW:
+      // Move up in the menu
+      if (*selected_option > 0) {
+        (*selected_option)--;
+      }
+      break;
+
+    case KEY_DOWN_ARROW:
+      // Move down in the menu
+      if (*selected_option < NUM_CATEGORIES - 1) { 
+        (*selected_option)++;
+      }
+      break;
+
+    case KEY_ENTER: {
+      // Map selected_option to category string
+      const char *categories[] = {"LCOM", "MOVIES", "ANIMALS", "COUNTRIES"};
+      generate_guessword(categories[*selected_option]);
+      state = PLAY;
+      break;
+    }
   }
 }
 

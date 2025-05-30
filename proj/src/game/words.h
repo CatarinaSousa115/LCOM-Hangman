@@ -4,7 +4,6 @@
 #include <lcom/lcf.h>
 #include <stdbool.h> 
 
-extern const char *guesswords[];
 extern const int guesswords_count;
 extern const char *guess_word;
 extern bool guessed_letters[26];  
@@ -18,7 +17,15 @@ typedef struct {
     char letter;
 } KeyMap;
 
-void generate_guessword();
+//associates words with categories
+typedef struct {
+    const char *word;
+    const char *category;
+} GuessWord;
+
+extern const GuessWord guesswords[];
+
+void generate_guessword(const char *category);
 
 char scancode_to_letter(uint8_t scancode);
 

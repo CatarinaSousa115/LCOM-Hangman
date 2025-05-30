@@ -25,6 +25,7 @@
 #define KEY_UP_ARROW 0x48
 #define KEY_DOWN_ARROW 0x50
 #define KEY_ENTER 0x1C
+#define KEY_ENTER_BREAK 0x9C
 
 //mouse
 #define MOUSE_LB BIT(0)

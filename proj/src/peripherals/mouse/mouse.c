@@ -16,7 +16,7 @@ int mouse_x = 150;                        // Initial mouse position X
 int mouse_y = 150;                        // Initial mouse position Y
 static uint32_t saved_background[32][32]; // Buffer to save the background under the mouse pointer
 
-extern int selected_option;
+extern int menu_selected_option;
 
 int(mouse_subscribe_int)(uint8_t *bit_no) {
   if (bit_no == NULL) {
@@ -197,6 +197,6 @@ void update_mouse_position() {
 void process_mouse_clicks() {
   if (mouse_packet.lb) {
     printf("Left button clicked at (%d, %d)\n", mouse_x, mouse_y);
-    handle_menu_click(mouse_x, mouse_y, &selected_option);
+    handle_menu_click(mouse_x, mouse_y, &menu_selected_option);
   }
 }

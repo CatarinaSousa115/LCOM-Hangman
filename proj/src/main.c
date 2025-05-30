@@ -11,6 +11,7 @@
 #include "game/hangman.h"
 #include "game/game_state.h"
 #include "game/menu.h"
+#include "game/categories.h"
 #include "game/game.h"
 
 #include <time.h>
@@ -19,7 +20,8 @@ extern uint32_t timer_counter;
 extern uint8_t scancode;
 extern uint8_t packet_byte_index;
 extern int remaining_time;
-extern int selected_option;
+extern int menu_selected_option;
+extern int categories_selected_option;
 extern bool redraw_needed;
 extern int mouse_x, mouse_y;
 
@@ -27,6 +29,7 @@ extern int mouse_x, mouse_y;
 uint8_t irq_kb, irq_mouse, irq_timer;
 bool gameRunning = true;
 StateOptions state = MENU;
+bool enter_pressed = false;
 
 
 int(main)(int argc, char *argv[]) {
@@ -110,7 +113,7 @@ int game_loop() {
 
             if (timer_counter % 60 == 0) {
               redraw_needed = true; 
-            } 
+            }      
 
             //if we are playing decrease the remaining time
             if ((timer_counter % 30 == 0) && (state == PLAY)) {
@@ -123,10 +126,26 @@ int game_loop() {
           if (msg.m_notify.interrupts & irq_kb) {
             keyboard_ih();
 
-            if (state == MENU) {
-              // Pass the scancode to handle_menu_input
-              handle_menu_input(scancode, &selected_option);
-              redraw_needed = true;
+            if (scancode == KEY_ENTER) {
+              if (!enter_pressed) {
+                enter_pressed = true;
+                if (state == MENU) {
+                  handle_menu_input(scancode, &menu_selected_option);
+                }
+                else if (state == CATEGORIES) {
+                  handle_categories_input(scancode, &categories_selected_option);
+                }
+              }
+            } else if (scancode == KEY_ENTER_BREAK) {
+              enter_pressed = false;
+            } else {
+              // Handle other keys as usual
+              if (state == MENU) {
+                handle_menu_input(scancode, &menu_selected_option);
+              }
+              else if (state == CATEGORIES) {
+                handle_categories_input(scancode, &categories_selected_option);
+              }
             }
 
             if (state == PLAY) {
@@ -157,7 +176,7 @@ int game_loop() {
             }
 
             if (state == MENU) {
-              update_selected_option(mouse_x, mouse_y, &selected_option);
+              update_selected_option(mouse_x, mouse_y, &menu_selected_option);
             }
           }
           break;

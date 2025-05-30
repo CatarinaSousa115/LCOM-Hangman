@@ -1,4 +1,3 @@
-
 #include "../peripherals/graphics/graphics.h"  
 #include "../assets/font.h"                  
 #include "../assets/game_pixmap.h"
@@ -6,14 +5,16 @@
 #include "words.h"           
 #include "hangman.h"          
 #include "menu.h"             
-#include "instructions.h"     
-#include "../game/game.h"    
+#include "instructions.h" 
+#include "categories.h"    
+#include "game.h"    
 #include "game_state.h"
 
 
 int current_stage = 0;
 int remaining_time = TIME_LIMIT
-int selected_option = 0;
+int menu_selected_option = 0;
+int categories_selected_option = 0;
 bool redraw_needed = true;
 bool is_setup = true;
 
@@ -21,13 +22,16 @@ bool is_setup = true;
 void handle_game_state() {
     switch (state) {
         case MENU:
-            draw_options(selected_option); 
+            draw_options(menu_selected_option); 
             break;
-   
+
+        case CATEGORIES:
+            draw_categories(categories_selected_option);
+            break;
+
         case PLAY:
             if(is_setup) {
                clear_screen();
-               generate_guessword();
                is_setup = false;
             }
 
@@ -77,8 +81,6 @@ void handle_game_state() {
 
             if(timer_counter % 180 == 0){
                 reset_game_state();
-                
-            
             }
             break;
 
@@ -95,7 +97,7 @@ void reset_game_state() {
     state = MENU;
     remaining_time = TIME_LIMIT; //we can create a new var
     current_stage = 0;
-    selected_option = 0;
+    menu_selected_option = 0;
     memset(guessed_letters, 0, sizeof(guessed_letters)); //clear the gessed_letters (all false again)
     is_setup = true;
     redraw_needed = true;

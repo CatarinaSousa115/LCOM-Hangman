@@ -82,7 +82,7 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
       switch (*selected_option) {
         case 0:
           printf("Start game selected\n");
-          state = PLAY;
+          state = CATEGORIES;
           break;
         case 1:
           printf("Instructions selected\n");

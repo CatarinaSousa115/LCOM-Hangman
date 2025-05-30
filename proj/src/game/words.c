@@ -32,27 +32,59 @@ KeyMap key_map[26] = {
 };
 
 //max word size is 10 (now)
-const char *guesswords[] = {
-    "HANGMAN",
-    "COMPUTER",
-    "PROGRAMMING",
-    "KEYBOARD",
-    "MOUSE",
-    "MONITOR",      
-    "SOFTWARE",     
-    "HARDWARE",     
-    "PROCESSOR", 
-    "DATABASE",    
-    "NETWORK",     
-    "ALGORITHM",    
-    "FUNCTION",     
-    "COMPILER",    
-    "TERMINAL",     
-    "GRAPHICS",     
-    "INTERNET",     
-    "ROUTER",      
-    "WEBCAM"
+const GuessWord guesswords[] = {
+    // LCOM category
+    {"COMPUTER", "LCOM"},
+    {"SOFTWARE", "LCOM"},
+    {"TIMER", "LCOM"},
+    {"TERMINAL", "LCOM"},
+    {"NETWORK", "LCOM"},
+    {"KEYBOARD", "LCOM"},
+    {"MOUSE", "LCOM"},
+    {"PROCESSOR", "LCOM"},
+    {"PROGRAMMING", "LCOM"},
+    {"ALGORITHM", "LCOM"},
+    {"FUNCTION", "LCOM"},
+    {"COMPILER", "LCOM"},
+
+    // JOBS category
+    {"TEACHER", "JOBS"},
+    {"ENGINEER", "JOBS"},
+    {"DOCTOR", "JOBS"},
+    {"LAWYER", "JOBS"},
+    {"NURSE", "JOBS"},
+    {"ARCHITECT", "JOBS"},
+    {"MECHANIC", "JOBS"},
+    {"SCIENTIST", "JOBS"},
+    {"FARMER", "JOBS"},
+
+    // ANIMALS category
+    {"ELEPHANT", "ANIMALS"},
+    {"KANGAROO", "ANIMALS"},
+    {"GIRAFFE", "ANIMALS"},
+    {"PENGUIN", "ANIMALS"},
+    {"CROCODILE", "ANIMALS"},
+    {"TIGER", "ANIMALS"},
+    {"DOLPHIN", "ANIMALS"},
+    {"RABBIT", "ANIMALS"},
+    {"SQUIRREL", "ANIMALS"},
+    {"ZEBRA", "ANIMALS"},
+
+    // COUNTRIES category
+    {"PORTUGAL", "COUNTRIES"},
+    {"BRAZIL", "COUNTRIES"},
+    {"CANADA", "COUNTRIES"},
+    {"GERMANY", "COUNTRIES"},
+    {"JAPAN", "COUNTRIES"},
+    {"AUSTRALIA", "COUNTRIES"},
+    {"INDIA", "COUNTRIES"},
+    {"EGYPT", "COUNTRIES"},
+    {"NORWAY", "COUNTRIES"},
+    {"MEXICO", "COUNTRIES"}
 };
+
+
+
 
 const int guesswords_count = sizeof(guesswords) / sizeof(guesswords[0]);
 const char *guess_word;
@@ -62,19 +94,37 @@ bool guessed_letters[26] = {false};
 char displayed_word[MAX_WORD_LENGTH] = {0}; //aux so we can track the "word state"
 
 
-void generate_guessword() {
-  //generate a random index to select a word
-  int random_index = rand() % guesswords_count;
-  guess_word = guesswords[random_index];
-   
-  //initialize the word state with "_"
+void generate_guessword(const char *category) {
+  // Count how many words match the category
+  int count = 0;
+  for (int i = 0; i < guesswords_count; i++) {
+    if (strcmp(guesswords[i].category, category) == 0) {
+      count++;
+    }
+  }
+
+  // If no words found, fallback
+  if (count == 0) return;
+
+  // Pick a random index among matching words
+  int random_index = rand() % count;
+  int idx = 0;
+  for (int i = 0; i < guesswords_count; i++) {
+    if (strcmp(guesswords[i].category, category) == 0) {
+      if (idx == random_index) {
+        guess_word = guesswords[i].word;
+        break;
+      }
+      idx++;
+    }
+  }
+
+  // Initialize displayed_word with '_'
   int word_size = strlen(guess_word);
   for (int i = 0; i < word_size; i++) {
     displayed_word[i] = '_';
   }
-  
-  //the last index of the gess_word is \0 so we can know were the word end
-  displayed_word[strlen(guess_word)] = '\0';
+  displayed_word[word_size] = '\0';
 }
 
 

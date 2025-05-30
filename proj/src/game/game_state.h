@@ -5,6 +5,7 @@
 
 typedef enum {
   MENU,
+  CATEGORIES,
   PLAY,
   INSTRUCTIONS,
   EXIT
