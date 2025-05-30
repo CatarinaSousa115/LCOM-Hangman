@@ -147,7 +147,6 @@ int game_loop() {
 
             if (scancode == ESC_BREAKCODE && state == INSTRUCTIONS) {
               state = MENU;
-              clear_screen();
               redraw_needed = true;
               }
           }

@@ -36,21 +36,16 @@ void(mouse_ih)() {
   uint8_t status;
 
   if (read_controller(STAT_REG, &status, 1) != 0) {
-    printf("Failed to read status register\n");
     return;
   }
 
-  printf("Status register: 0x%x\n", status);
 
   if ((status & OUT_BUF_FULL) && (status & AUX)) {
     if (read_controller(OUT_BUF, &curr_mouse_byte, 1) != 0) {
-      printf("Error reading current mouse byte\n");
       return;
     }
-    printf("Mouse byte received: 0x%x\n", curr_mouse_byte);
   }
   else {
-    printf("Interrupt triggered without valid mouse data\n");
   }
 }
 
@@ -123,11 +118,9 @@ int init_mouse_pointer() {
   // Load the mouse pointer XPM image
   mouse_pixmap = xpm_load((xpm_map_t) mouse_pointer_xpm, XPM_INDEXED, &mouse_img);
   if (mouse_pixmap == NULL) {
-    printf("Failed to load mouse pointer XPM\n");
     return 1;
   }
   if (mouse_img.width > h_res || mouse_img.height > v_res) {
-    printf("Pixmap exceeds screen bounds.\n");
     return 1;
   }
   return 0;
@@ -195,7 +188,6 @@ void update_mouse_position() {
 
 void process_mouse_clicks() {
   if (mouse_packet.lb) {
-    printf("Left button clicked at (%d, %d)\n", mouse_x, mouse_y);
     handle_menu_click(mouse_x, mouse_y, &selected_option);
   }
 }
@@ -232,10 +224,4 @@ void update_mouse_position_with_double_buffering() {
   } else if (!mouse_packet.y_ov) {
     mouse_y -= mouse_packet.delta_y; // Invert delta_y for correct vertical movement
   }
-
-  // Draw the mouse pointer to the back buffer
-  draw_mouse_pointer_to_back_buffer();
-
-  // Swap buffers to display the updated frame
-  swap_buffers();
 }

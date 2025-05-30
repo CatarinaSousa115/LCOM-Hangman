@@ -18,7 +18,7 @@ void save_background(int x, int y);
 void restore_background(int x, int y);
 void update_mouse_position();
 void update_mouse_position_with_double_buffering();
-void draw_mouse_pointer_with_double_buffering();
+void draw_mouse_pointer_to_back_buffer();
 void draw_mouse_pointer();
 void process_mouse_clicks();
 

@@ -51,7 +51,6 @@ bool check_win() {
 
 void draw_game_over_screen() {
 
-  clear_screen();
   const char *output_text; 
 
   if (check_win()) {
