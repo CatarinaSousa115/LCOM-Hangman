@@ -21,6 +21,7 @@ void draw_instructions_screen(void) {
                                 "  complete.\n",
                                 "- Use the arrow keys to navigate.\n",
                                 "- Press ENTER to select.\n",
+                                "- Press ESC to GO BACK. \n",
                                 "Good luck!"};
 
   // 'Instructions' position

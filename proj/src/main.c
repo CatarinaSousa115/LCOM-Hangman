@@ -125,7 +125,6 @@ int game_loop() {
             if (state == MENU) {
               // Pass the scancode to handle_menu_input
               handle_menu_input(scancode, &selected_option);
-              handle_menu_click(mouse_x, mouse_y, &selected_option);
               redraw_needed = true;
             }
 
@@ -140,11 +139,11 @@ int game_loop() {
               }
             }
 
-            if ((scancode == ESC_BREAKCODE || scancode == KEY_ENTER) && state == INSTRUCTIONS) {
-              state = EXIT;
+            if (scancode == ESC_BREAKCODE && state == INSTRUCTIONS) {
+              state = MENU;
+              clear_screen();
               redraw_needed = true;
-            }
-
+              }
           }
 
           // Mouse interrupt

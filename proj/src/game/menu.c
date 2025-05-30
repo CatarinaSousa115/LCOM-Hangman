@@ -88,15 +88,12 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
           printf("Instructions selected\n");
           state = INSTRUCTIONS;
           clear_screen();
-          // Open instructions here
+          draw_instructions_screen();
           break;
         case 2:
           gameRunning = false; // Exit the game
           break;
 
-        default:
-          // Handle other keys if necessary
-          break;
       }
   }
 }
