@@ -49,13 +49,17 @@ int(main)(int argc, char *argv[]) {
 
 int init_devices() {
 
-  if (map_video_memory(0x105) != 0) {
+  if (map_main_bufferory(0x105) != 0) {
     return 1;
   }
 
   // Initialize graphics mode
   if (vg_init_graphic(0x105) != 0) {
     printf("Failed to initialize graphics mode. Exiting...\n");
+    return 1;
+  }
+
+  if (init_double_buffer() != 0) {
     return 1;
   }
 
@@ -77,6 +81,8 @@ int init_devices() {
 }
 
 int remove_devices() {
+  free_double_buffer();
+
   if (vg_exit() != 0)
     return 1;
 
@@ -163,7 +169,6 @@ int game_loop() {
 
             if (scancode == ESC_BREAKCODE && state == INSTRUCTIONS) {
               state = MENU;
-              clear_screen();
               redraw_needed = true;
               }
           }
@@ -188,9 +193,12 @@ int game_loop() {
       }
     }
 
-    if (redraw_needed) {
-      handle_game_state();
-    }
+   if (redraw_needed) {
+      clear_back_buffer();       
+      handle_game_state();       
+      swap_buffers();          
+      redraw_needed = false;
+  }
   }
   return 0;
 }

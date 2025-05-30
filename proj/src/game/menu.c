@@ -87,7 +87,6 @@ void handle_menu_input(uint8_t scancode, int *selected_option) {
         case 1:
           printf("Instructions selected\n");
           state = INSTRUCTIONS;
-          clear_screen();
           draw_instructions_screen();
           break;
         case 2:
@@ -128,7 +127,6 @@ void handle_menu_click(int x, int y, int *selected_option) {
     if (x >= back_button_x && x <= back_button_x + BUTTON_WIDTH &&
         y >= back_button_y && y <= back_button_y + BUTTON_HEIGHT) {
       state = MENU; // Return to menu on click
-      clear_screen();
       redraw_needed = true;
 
     }

@@ -51,7 +51,6 @@ bool check_win() {
 
 void draw_game_over_screen() {
 
-  clear_screen();
   const char *output_text; 
 
   if (check_win()) {
@@ -71,11 +70,11 @@ void draw_game_over_screen() {
       output_text = "You lose!";
     }
 
-    output_word = "Your word was: ";
+    output_word = "Your word was:";
 
     draw_string(output_text, (SCREEN_WIDTH - strlen(output_text) * 8 * 3) / 2, SCREEN_HEIGHT / 2, TEXT_COLOR, 3);
     draw_string(output_word, (SCREEN_WIDTH - strlen(output_word) * 8 * 3) / 2, SCREEN_HEIGHT / 2 + 40, TEXT_COLOR, 3);
-    draw_string(guess_word, (SCREEN_WIDTH - strlen(output_word) * 8 * 3) / 2 + 10, SCREEN_HEIGHT / 2 + 80, TEXT_COLOR, 3);
+    draw_string(guess_word, (SCREEN_WIDTH - strlen(guess_word) * 8 * 3) / 2, SCREEN_HEIGHT / 2 + 80, TEXT_COLOR, 3);
   }
 }
 

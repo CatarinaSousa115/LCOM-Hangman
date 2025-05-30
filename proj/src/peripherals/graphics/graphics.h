@@ -17,11 +17,20 @@ typedef struct {
     uint8_t r, g, b; //auxiliar para guardar o RGB
 } RGBColor;
 
+extern uint8_t *main_buffer;       
+extern uint8_t *back_buffer;   
+extern uint8_t bytes_per_pixel;
+
+int init_double_buffer();
+void clear_back_buffer();
+void swap_buffers();
+void free_double_buffer();
+
 int (end_loop_ESC)();
 
 int (vg_init_graphic)(uint16_t mode);
 
-int (map_video_memory)(uint16_t mode);
+int map_main_bufferory(uint16_t mode);
 
 int (vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color);
 

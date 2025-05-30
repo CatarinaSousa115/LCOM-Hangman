@@ -7,7 +7,8 @@ extern uint8_t scancode;
 
 // Variáveis globais acessíveis pelas funções de desenho
 vbe_mode_info_t video_info;
-uint8_t *video_mem;
+uint8_t *main_buffer;
+uint8_t *back_buffer = NULL;
 uint16_t h_res;
 uint16_t v_res;
 uint8_t bytes_per_pixel;
@@ -68,7 +69,7 @@ int (vg_draw_pixel)(uint16_t x, uint16_t y, uint32_t color) {
   uint32_t index = (h_res * y + x) * bytes_per_pixel;
 
   //desenha o pixel na memoria na pos "index" de acordo com o numero de bytes que serao copiados (bytes_per_pixel)
-  memcpy(&video_mem[index], &color, bytes_per_pixel);
+  memcpy(&back_buffer[index], &color, bytes_per_pixel);
   
   return 0;
 }
@@ -96,7 +97,7 @@ int (vg_draw_rectangle)(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
   return 0;
 }
 
-int map_video_memory(uint16_t mode) {
+int map_main_bufferory(uint16_t mode) {
 
   //vai obter informação sobre o modo grafico
   memset(&video_info, 0, sizeof(video_info));
@@ -118,9 +119,9 @@ int map_video_memory(uint16_t mode) {
 
   if (sys_privctl(SELF, SYS_PRIV_ADD_MEM, &memory_range) != 0) return 1;
     
-  video_mem = vm_map_phys(SELF, (void *)memory_range.mr_base, vram_size); //mapear a virtual memory)
+  main_buffer = vm_map_phys(SELF, (void *)memory_range.mr_base, vram_size); //mapear a virtual memory)
   
-  if (video_mem == NULL) return 1;
+  if (main_buffer == NULL) return 1;
 
   return 0;
 }
@@ -293,7 +294,7 @@ void graphics_exit(void) {
 }
 
 void clear_screen() {
-  vg_draw_rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0x000000);
+  memset(back_buffer, 0, h_res * v_res * bytes_per_pixel);
 }
 
 uint32_t vg_get_pixel(uint16_t x, uint16_t y) {
@@ -302,7 +303,36 @@ uint32_t vg_get_pixel(uint16_t x, uint16_t y) {
   uint32_t index = (h_res * y + x) * bytes_per_pixel;
 
   uint32_t color;
-  memcpy(&color, &video_mem[index], bytes_per_pixel);
+  memcpy(&color, &back_buffer[index], bytes_per_pixel);
 
   return color;
+}
+
+
+int init_double_buffer() {
+  if (main_buffer == NULL) return 1;
+  
+  back_buffer = malloc(h_res * v_res * bytes_per_pixel);
+  
+  if (back_buffer == NULL) {
+    return 1;
+  }
+  
+  return 0;
+}
+
+void clear_back_buffer() {
+  memset(back_buffer, 0, h_res * v_res * bytes_per_pixel);
+}
+
+void swap_buffers() {
+  memcpy(main_buffer, back_buffer, h_res * v_res * bytes_per_pixel);
+}
+
+void free_double_buffer() {
+  if (back_buffer != NULL) {
+    
+    free(back_buffer);
+    back_buffer = NULL;
+  }
 }

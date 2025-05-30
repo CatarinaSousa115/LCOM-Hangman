@@ -1,4 +1,5 @@
 #include "../peripherals/graphics/graphics.h"  
+#include "../peripherals/mouse/mouse.h"
 #include "../assets/font.h"                  
 #include "../assets/game_pixmap.h"
 
@@ -31,7 +32,7 @@ void handle_game_state() {
 
         case PLAY:
             if(is_setup) {
-               clear_screen();
+               generate_guessword();
                is_setup = false;
             }
 
@@ -64,7 +65,6 @@ void handle_game_state() {
             gameCountdown(remaining_time);
             
             if(check_win()) {
-                clear_screen();
                 state = EXIT;
                 redraw_needed = true;
             }
@@ -85,14 +85,13 @@ void handle_game_state() {
             break;
 
     }
+    draw_mouse_pointer_to_back_buffer();
+    swap_buffers();
     redraw_needed = false;
 }
 
 
 void reset_game_state() {
-
-    //clear the screen
-    clear_screen();
 
     state = MENU;
     remaining_time = TIME_LIMIT; //we can create a new var
