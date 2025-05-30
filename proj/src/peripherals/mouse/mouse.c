@@ -39,7 +39,6 @@ void(mouse_ih)() {
     return;
   }
 
-
   if ((status & OUT_BUF_FULL) && (status & AUX)) {
     if (read_controller(OUT_BUF, &curr_mouse_byte, 1) != 0) {
       return;
@@ -197,7 +196,7 @@ void draw_mouse_pointer_to_back_buffer() {
   for (int row = 0; row < mouse_img.height; row++) {
     for (int col = 0; col < mouse_img.width; col++) {
       uint32_t color = mouse_img.bytes[row * mouse_img.width + col];
-      if (color != 0x0000) { // Skip transparent pixels
+      if (color != 0x0000) {                                // Skip transparent pixels
         vg_draw_pixel(mouse_x + col, mouse_y + row, color); // Use back buffer
       }
     }
@@ -205,23 +204,29 @@ void draw_mouse_pointer_to_back_buffer() {
 }
 
 void update_mouse_position_with_double_buffering() {
-  clear_back_buffer();
+  int speed = 2;
 
   // Update horizontal position
-  if (mouse_x + mouse_packet.delta_x < 0 && !mouse_packet.x_ov) {
+  int dx = mouse_packet.delta_x * speed;
+  if (mouse_x + dx < 0 && !mouse_packet.x_ov) {
     mouse_x = 0;
-  } else if (mouse_x + mouse_packet.delta_x > SCREEN_WIDTH - mouse_img.width && !mouse_packet.x_ov) {
+  }
+  else if (mouse_x + dx > SCREEN_WIDTH - mouse_img.width && !mouse_packet.x_ov) {
     mouse_x = SCREEN_WIDTH - mouse_img.width;
-  } else if (!mouse_packet.x_ov) {
-    mouse_x += mouse_packet.delta_x;
+  }
+  else if (!mouse_packet.x_ov) {
+    mouse_x += dx;
   }
 
   // Update vertical position
-  if (mouse_y - mouse_packet.delta_y < 0 && !mouse_packet.y_ov) {
+  int dy = mouse_packet.delta_y * speed;
+  if (mouse_y - dy < 0 && !mouse_packet.y_ov) {
     mouse_y = 0;
-  } else if (mouse_y - mouse_packet.delta_y > SCREEN_HEIGHT - mouse_img.height && !mouse_packet.y_ov) {
+  }
+  else if (mouse_y - dy > SCREEN_HEIGHT - mouse_img.height && !mouse_packet.y_ov) {
     mouse_y = SCREEN_HEIGHT - mouse_img.height;
-  } else if (!mouse_packet.y_ov) {
-    mouse_y -= mouse_packet.delta_y; // Invert delta_y for correct vertical movement
+  }
+  else if (!mouse_packet.y_ov) {
+    mouse_y -= dy; // Invertido para movimento correto
   }
 }

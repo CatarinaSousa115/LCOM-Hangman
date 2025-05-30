@@ -120,7 +120,7 @@ int game_loop() {
           if (msg.m_notify.interrupts & irq_timer) {
             timer_int_handler();
 
-            if (timer_counter % 60 == 0) {
+            if (timer_counter % 10 == 0) {
               redraw_needed = true; 
             }      
 
@@ -196,7 +196,8 @@ int game_loop() {
    if (redraw_needed) {
       clear_back_buffer();       
       handle_game_state();       
-      swap_buffers();          
+      draw_mouse_pointer_to_back_buffer();
+      swap_buffers();
       redraw_needed = false;
   }
   }
